@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 type Role = "eleve" | "professeur" | "parent";
 
@@ -27,7 +27,7 @@ const EyeIcon = ({ open }: { open: boolean }) => (
 );
 
 const FieldIcon = ({ type }: { type: string }) => {
-  const icons: Record<string, JSX.Element> = {
+  const icons: Record<string, React.ReactNode> = {
     user: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#6b7280" strokeWidth="1.8" fill="none" /><circle cx="12" cy="7" r="4" stroke="#6b7280" strokeWidth="1.8" fill="none" /></>,
     phone: <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="#6b7280" strokeWidth="1.8" fill="none" />,
     lock: <><rect x="3" y="11" width="18" height="11" rx="2" stroke="#6b7280" strokeWidth="1.8" fill="none" /><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round" /></>,
