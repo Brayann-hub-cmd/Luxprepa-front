@@ -1,17 +1,12 @@
 import { useState } from "react";
-
+import logo from '../images/logo.jpg'
+import { PiStudent } from "react-icons/pi";
+import { GiTeacher } from "react-icons/gi";
+import { Link, useNavigate } from "react-router-dom";
+import { authApi } from "../api";
+import {toast} from "react-hot-toast";
 // ── Types ────────────────────────────────────────────────────
-type Role = "eleve" | "professeur";
-
-// ── Logo SVG Luxprepa ────────────────────────────────────────
-const LuxprepaLogo = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <rect width="52" height="52" rx="14" fill="#166534" />
-    <path d="M14 14 L26 8 L38 14 L38 38 L26 44 L14 38 Z" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.3"/>
-    <text x="26" y="32" textAnchor="middle" fill="white" fontSize="18" fontWeight="800"
-      fontFamily="Georgia, serif" letterSpacing="-1">LP</text>
-  </svg>
-);
+type Role = "eleve" | "prof";
 
 // ── Eye Icon ─────────────────────────────────────────────────
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -53,11 +48,19 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
+  const navigate = useNavigate()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     // TODO: appel API axios ici
+    try {
+      const response = await authApi.connexion({ telephone:phone, password: password })
+      toast.success(response.message)
+      setLoading(false)
+      navigate('/')
+    } catch (error) {
+      setLoading(false)
+    }
     // await api.post("/auth/login", { telephone: phone, password, role });
     setTimeout(() => setLoading(false), 2000);
   };
@@ -74,7 +77,6 @@ export default function Login() {
       position: "relative",
       overflow: "hidden",
     }}>
-
       {/* Decorative background circles */}
       <div style={{ position: "absolute", top: -80, right: -80, width: 320, height: 320, borderRadius: "50%", background: "rgba(134,239,172,.25)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: -60, left: -60, width: 240, height: 240, borderRadius: "50%", background: "rgba(74,222,128,.2)", pointerEvents: "none" }} />
@@ -116,11 +118,10 @@ export default function Login() {
         position: "relative",
         zIndex: 1,
       }}>
-
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-            <LuxprepaLogo />
+            <img src={logo} className="h-[48px] w-auto" />
           </div>
           <h1 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -130,7 +131,7 @@ export default function Login() {
             margin: "0 0 8px",
             lineHeight: 1.2,
           }}>
-            Bienvenue sur Luxprepa
+            Bienvenue à Luxprepa
           </h1>
           <p style={{
             fontSize: 13.5,
@@ -139,7 +140,6 @@ export default function Login() {
             lineHeight: 1.5,
           }}>
             Nous vous souhaitons la bienvenue !<br />
-            Connectez-vous pour continuer.
           </p>
         </div>
 
@@ -152,7 +152,7 @@ export default function Login() {
           marginBottom: 28,
           border: "1px solid #bbf7d0",
         }}>
-          {(["eleve", "professeur"] as Role[]).map((r) => (
+          {(["eleve" , "prof"] as Role[]).map((r) => (
             <button
               key={r}
               className="role-tab"
@@ -172,7 +172,9 @@ export default function Login() {
                 letterSpacing: .2,
               }}
             >
-              {r === "eleve" ? "👨‍🎓 Élève" : "👨‍🏫 Professeur"}
+              {r === "eleve" ? 
+              <div className="flex flex-row items-center justify-center gap-4"><PiStudent size={25} color="grey"/> Élève</div>: 
+              <div className="flex flex-row items-center justify-center gap-4"><GiTeacher size={25} color="grey"/> Professeur</div>}
             </button>
           ))}
         </div>
@@ -341,15 +343,15 @@ export default function Login() {
         {/* Sign up link */}
         <p style={{ textAlign: "center", fontSize: 13.5, color: "#6b7280", margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Vous n'avez pas de compte ?{" "}
-          <a href="/register" className="signup-link" style={{ color: "#166534", fontWeight: 700, textDecoration: "none" }}>
+          <Link to="/register" className="signup-link" style={{ color: "#166534", fontWeight: 700, textDecoration: "none" }}>
             Inscrivez-vous
-          </a>
+          </Link>
         </p>
 
         {/* Footer note */}
         <p style={{ textAlign: "center", fontSize: 11, color: "#9ca3af", marginTop: 20, marginBottom: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           En vous connectant, vous acceptez nos{" "}
-          <span style={{ color: "#166534", cursor: "pointer" }}>conditions d'utilisation</span>
+          <Link to={"/condition-utilisation"} style={{ color: "#166534", cursor: "pointer" }}>conditions d'utilisation</Link>
         </p>
       </div>
     </div>

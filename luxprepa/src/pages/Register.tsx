@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 type Role = "eleve" | "professeur" | "parent";
 
 const LuxprepaLogo = () => (
@@ -43,9 +43,9 @@ const FieldIcon = ({ type }: { type: string }) => {
 };
 
 const ROLES = [
-  { key: "eleve" as Role,      label: "Élève",       emoji: "👨‍🎓" },
-  { key: "professeur" as Role, label: "Professeur",  emoji: "👨‍🏫" },
-  { key: "parent" as Role,     label: "Parent",      emoji: "👨‍👩‍👦" },
+  { key: "eleve" as Role, label: "Élève", emoji: "👨‍🎓" },
+  { key: "professeur" as Role, label: "Professeur", emoji: "👨‍🏫" },
+  { key: "parent" as Role, label: "Parent", emoji: "👨‍👩‍👦" },
 ];
 
 export default function Register() {
@@ -57,10 +57,10 @@ export default function Register() {
     nomEnfant: "", prenomEnfant: "",
     password: "", confirmPassword: "",
   });
-  const [showPassword, setShowPassword]   = useState(false);
-  const [showConfirm, setShowConfirm]     = useState(false);
-  const [loading, setLoading]             = useState(false);
-  const [focused, setFocused]             = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
 
   const update = (key: string, val: string) =>
     setForm(p => ({ ...p, [key]: val }));
@@ -234,7 +234,7 @@ export default function Register() {
                   style={{ ...inputStyle("ville"), appearance: "none" as const }}
                   onFocus={() => setFocused("ville")} onBlur={() => setFocused(null)}>
                   <option value="">Sélectionner une ville</option>
-                  {["Douala","Yaoundé","Bafoussam","Bamenda","Garoua","Maroua","Ngaoundéré","Buea","Limbe","Kribi"].map(v => (
+                  {["Douala", "Yaoundé", "Bafoussam", "Bamenda", "Garoua", "Maroua", "Ngaoundéré", "Buea", "Limbe", "Kribi"].map(v => (
                     <option key={v} value={v}>{v}</option>
                   ))}
                 </select>
@@ -251,7 +251,7 @@ export default function Register() {
                     style={{ ...inputStyle("specialite"), appearance: "none" as const }}
                     onFocus={() => setFocused("specialite")} onBlur={() => setFocused(null)}>
                     <option value="">Sélectionner une matière</option>
-                    {["Mathématiques","Physique-Chimie","SVT","Français","Anglais","Histoire-Géo","Philosophie","Économie","Droit","Informatique"].map(m => (
+                    {["Mathématiques", "Physique-Chimie", "SVT", "Français", "Anglais", "Histoire-Géo", "Philosophie", "Économie", "Droit", "Informatique"].map(m => (
                       <option key={m} value={m}>{m}</option>
                     ))}
                   </select>
@@ -411,6 +411,10 @@ export default function Register() {
           <a href="/login" style={{ color: "#166534", fontWeight: 700, textDecoration: "none" }}>
             Se connecter
           </a>
+        </p>
+        <p style={{ textAlign: "center", fontSize: 11, color: "#9ca3af", marginTop: 20, marginBottom: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          En vous inscrivant, vous acceptez nos{" "}
+          <Link to={"/condition-utilisation"} style={{ color: "#166534", cursor: "pointer" }}>conditions d'utilisation</Link>
         </p>
       </div>
     </div>
