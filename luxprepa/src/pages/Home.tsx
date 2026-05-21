@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-
+import logo from '../images/logo.jpg'
+import { BiArrowToRight } from "react-icons/bi";
 export default function Home() {
   const navigate = useNavigate();
 
@@ -11,12 +12,14 @@ export default function Home() {
     }}>
 
       {/* NAVBAR */}
-      <nav style={{
+      <nav className="gap-2" style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "16px 40px", background: "white",
         boxShadow: "0 1px 8px rgba(0,0,0,0.06)"
       }}>
-        <span style={{ fontWeight: 800, fontSize: 22, color: "#166534" }}>LuXPREPA</span>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
+          <img src={logo} className="h-[36px] w-auto" />
+        </div>
         <div style={{ display: "flex", gap: 12 }}>
           <button onClick={() => navigate("/login")} style={{
             padding: "8px 20px", borderRadius: 8, border: "1.5px solid #166534",
@@ -32,24 +35,24 @@ export default function Home() {
       </nav>
 
       {/* HERO */}
-      <div style={{ textAlign: "center", padding: "90px 20px 60px" }}>
+      <div className="flex flex-col items-center justify-center" style={{ textAlign: "center", padding: "90px 20px 60px" }}>
         <div style={{
           display: "inline-block", background: "#dcfce7", color: "#166534",
           borderRadius: 20, padding: "6px 16px", fontSize: 13,
           fontWeight: 600, marginBottom: 20
-        }}>🎯 Plateforme de préparation aux concours</div>
+        }}>Plateforme d'un groupe de préparation aux concours d'entrée de grandes universités au Cameroun.</div>
 
         <h1 style={{ fontSize: 44, fontWeight: 800, color: "#166534", margin: "0 0 16px", lineHeight: 1.2 }}>
-          Réussissez votre concours<br />avec <span style={{ color: "#22c55e" }}>LuXPREPA</span>
+          Réussissez vos concours<br />avec <span style={{ color: "#22c55e" }}>LuXPREPA</span>
         </h1>
-        <p style={{ fontSize: 17, color: "#6b7280", maxWidth: 500, margin: "0 auto 36px" }}>
-          La plateforme qui accompagne élèves, professeurs et parents vers l'excellence.
+        <p className="text-justify" style={{ fontSize: 17, color: "#6b7280", maxWidth: 500, margin: "0 auto 36px" }}>
+          La plateforme qui accompagne les élèves. Des anciens sujets corrigés, des examens type concours chaque semaines, assistance à la constitution de vos dossiers de concours, preparations journalières intensives avec des professeurs qui savent partager leur savoir. 
         </p>
-        <button onClick={() => navigate("/register")} style={{
+        <button className="flex flex-row items-center justify-center" onClick={() => navigate("/register")} style={{
           padding: "15px 40px", borderRadius: 12, background: "#166534",
           color: "white", fontWeight: 700, fontSize: 16, border: "none",
           cursor: "pointer", boxShadow: "0 4px 20px rgba(22,101,52,.35)"
-        }}>Commencer gratuitement →</button>
+        }}>Commencer gratuitement <BiArrowToRight size={20}/></button>
       </div>
 
       {/* CARDS */}
