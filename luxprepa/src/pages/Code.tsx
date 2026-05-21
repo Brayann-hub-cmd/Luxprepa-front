@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { authApi } from "../api";
+import toast from "react-hot-toast";
 export default function VerifyCode() {
   const navigate = useNavigate();
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -37,18 +38,28 @@ export default function VerifyCode() {
     e.preventDefault();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const full = code.join("");
     if (full.length < 6) {
       setError("Veuillez entrer les 6 chiffres du code.");
       return;
     }
     setLoading(true);
+
+    try {
+      const resultat = code.join('');
+      const tel = localStorage.getItem("telephone")
+      const response = await authApi.confirmer({ telephone: tel, code: resultat })
+      toast.success(response.message)
+      setLoading(false)
+    } catch (error) {
+      toast.error("une erreur est survenue")
+      setLoading(false)
+    }
     setTimeout(() => {
       setLoading(false);
       // navigate("/dashboard"); // décommentez quand prêt
-      alert("Code vérifié avec succès !");
-    }, 1500);
+    }, 2000);
   };
 
   const handleResend = () => {
@@ -156,8 +167,8 @@ export default function VerifyCode() {
             <>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                 style={{ animation: "spin 1s linear infinite" }}>
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" strokeWidth="3"/>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" strokeWidth="3" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
               </svg>
               Vérification...
             </>
