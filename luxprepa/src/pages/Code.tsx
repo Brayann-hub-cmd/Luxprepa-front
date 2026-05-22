@@ -49,9 +49,8 @@ export default function VerifyCode() {
 
     try {
       const resultat = code.join('');
-      localStorage.setItem('telephone',"694575094")
-      const tel = localStorage.getItem("telephone").toString()
-      const response = await authApi.confirmer({ telephone: tel, code: resultat })
+      const tel = localStorage.getItem("telephone") || ""
+      const response = await authApi.confirmer({telephone:tel,code:resultat})
       toast.success(response.message)
       console.log(response.message);
       setLoading(false)

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-type Role = "eleve" | "professeur" | "parent";
-
+import { Link, useNavigate } from "react-router-dom";
+type Role = "eleve" | "parent";
+import { authApi } from "../api";
 const LuxprepaLogo = () => (
   <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
     <span style={{ fontFamily: "Georgia, serif", fontWeight: 900, fontSize: 26, color: "#166534", letterSpacing: -1 }}>Lu</span>
@@ -44,7 +44,6 @@ const FieldIcon = ({ type }: { type: string }) => {
 
 const ROLES = [
   { key: "eleve" as Role, label: "Élève", emoji: "👨‍🎓" },
-  { key: "professeur" as Role, label: "Professeur", emoji: "👨‍🏫" },
   { key: "parent" as Role, label: "Parent", emoji: "👨‍👩‍👦" },
 ];
 
@@ -52,20 +51,19 @@ export default function Register() {
   const [role, setRole] = useState<Role>("eleve");
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    nom: "", prenom: "", telephone: "", ville: "",
-    specialite: "",
-    nomEnfant: "", prenomEnfant: "",
-    password: "", confirmPassword: "",
+    nom: "", prenom: "", telephone: "",
+    password: "", role:"",niveau:"tle"
   });
+  const [confirmPassword,setConfirmPassword] = useState<string>("")
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-
+  const navigate = useNavigate()
   const update = (key: string, val: string) =>
     setForm(p => ({ ...p, [key]: val }));
 
-  const passwordMatch = form.confirmPassword === "" || form.password === form.confirmPassword;
+  const passwordMatch = confirmPassword === "" || form.password === confirmPassword;
 
   const inputStyle = (field: string): React.CSSProperties => ({
     width: "100%",
@@ -92,12 +90,22 @@ export default function Register() {
     position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)",
     display: "flex", alignItems: "center",
   };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordMatch) return;
     setLoading(true);
-    // TODO: await api.post("/auth/register", { ...form, role });
+    try {
+      console.log(form);
+      
+      const response =  await authApi.preInscription({...form,role:"eleve"})
+      localStorage.setItem('telephone',form.telephone)
+      if(response.message){
+        navigate('/verify')
+      }
+    } catch (error) {
+      console.log(error);
+    }
     setTimeout(() => setLoading(false), 2000);
   };
 
@@ -225,69 +233,6 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Ville */}
-            <div>
-              <label style={labelStyle}>Ville</label>
-              <div style={{ position: "relative" }}>
-                <span style={iconWrap}><FieldIcon type="city" /></span>
-                <select value={form.ville} required onChange={e => update("ville", e.target.value)}
-                  style={{ ...inputStyle("ville"), appearance: "none" as const }}
-                  onFocus={() => setFocused("ville")} onBlur={() => setFocused(null)}>
-                  <option value="">Sélectionner une ville</option>
-                  {["Douala", "Yaoundé", "Bafoussam", "Bamenda", "Garoua", "Maroua", "Ngaoundéré", "Buea", "Limbe", "Kribi"].map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Spécialité — prof uniquement */}
-            {role === "professeur" && (
-              <div>
-                <label style={labelStyle}>Matière enseignée</label>
-                <div style={{ position: "relative" }}>
-                  <span style={iconWrap}><FieldIcon type="book" /></span>
-                  <select value={form.specialite} required onChange={e => update("specialite", e.target.value)}
-                    style={{ ...inputStyle("specialite"), appearance: "none" as const }}
-                    onFocus={() => setFocused("specialite")} onBlur={() => setFocused(null)}>
-                    <option value="">Sélectionner une matière</option>
-                    {["Mathématiques", "Physique-Chimie", "SVT", "Français", "Anglais", "Histoire-Géo", "Philosophie", "Économie", "Droit", "Informatique"].map(m => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {/* Nom + Prénom de l'enfant — parent uniquement */}
-            {role === "parent" && (
-              <div style={{ background: "#f0fdf4", borderRadius: 14, padding: "14px 14px 10px", border: "1px solid #bbf7d0" }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#166534", margin: "0 0 12px", fontFamily: "'Plus Jakarta Sans', sans-serif", textTransform: "uppercase", letterSpacing: .3 }}>
-                  👦 Informations de l'enfant
-                </p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <div>
-                    <label style={labelStyle}>Nom enfant</label>
-                    <div style={{ position: "relative" }}>
-                      <span style={iconWrap}><FieldIcon type="child" /></span>
-                      <input placeholder="Kamga" value={form.nomEnfant} required
-                        onChange={e => update("nomEnfant", e.target.value)} style={inputStyle("nomEnfant")}
-                        onFocus={() => setFocused("nomEnfant")} onBlur={() => setFocused(null)} />
-                    </div>
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Prénom enfant</label>
-                    <div style={{ position: "relative" }}>
-                      <span style={iconWrap}><FieldIcon type="child" /></span>
-                      <input placeholder="Junior" value={form.prenomEnfant} required
-                        onChange={e => update("prenomEnfant", e.target.value)} style={inputStyle("prenomEnfant")}
-                        onFocus={() => setFocused("prenomEnfant")} onBlur={() => setFocused(null)} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <button type="submit" className="reg-btn" style={{
               marginTop: 4, padding: "13px", background: "#166534", color: "#fff",
               border: "none", borderRadius: 13, fontSize: 15, fontWeight: 800,
@@ -328,7 +273,7 @@ export default function Register() {
               <div style={{ position: "relative" }}>
                 <span style={iconWrap}><FieldIcon type="lock" /></span>
                 <input type={showConfirm ? "text" : "password"} placeholder="••••••••"
-                  value={form.confirmPassword} required onChange={e => update("confirmPassword", e.target.value)}
+                  value={confirmPassword} required onChange={e => setConfirmPassword(e.target.value)}
                   style={{
                     ...inputStyle("confirm"), paddingRight: 44,
                     borderColor: !passwordMatch ? "#ef4444" : focused === "confirm" ? "#166534" : "#d1fae5",
@@ -342,7 +287,7 @@ export default function Register() {
                   <EyeIcon open={showConfirm} />
                 </button>
               </div>
-              {!passwordMatch && form.confirmPassword !== "" && (
+              {!passwordMatch && confirmPassword !== "" && (
                 <p style={{ fontSize: 12, color: "#ef4444", marginTop: 5, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   Les mots de passe ne correspondent pas
                 </p>
@@ -355,18 +300,8 @@ export default function Register() {
                 {ROLES.find(r => r.key === role)?.emoji} {ROLES.find(r => r.key === role)?.label}
               </p>
               <p style={{ margin: 0, color: "#374151", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13 }}>
-                {form.prenom} {form.nom} · {form.telephone} · {form.ville}
+                {form.prenom} {form.nom} · {form.telephone}
               </p>
-              {role === "parent" && form.nomEnfant && (
-                <p style={{ margin: "4px 0 0", color: "#6b7280", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12 }}>
-                  Enfant : {form.prenomEnfant} {form.nomEnfant}
-                </p>
-              )}
-              {role === "professeur" && form.specialite && (
-                <p style={{ margin: "4px 0 0", color: "#6b7280", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12 }}>
-                  Matière : {form.specialite}
-                </p>
-              )}
             </div>
 
             <div style={{ display: "flex", gap: 10 }}>
