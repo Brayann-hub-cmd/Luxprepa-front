@@ -1,37 +1,98 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from '../images/logo.jpg';
+
+import {
+  FiSettings, FiCalendar, FiMapPin, FiDollarSign, FiClock,
+  FiUsers, FiAward, FiLogIn, FiUserPlus, FiX, FiBookOpen,
+  FiMonitor, FiRadio, FiTool, FiActivity, FiBriefcase,
+} from "react-icons/fi";
+import { GiMedicalPack } from "react-icons/gi";
+import { MdConstruction } from "react-icons/md";
 
 const concours = [
-  { id:1, nom:"ENSPD", ecole:"École Nationale Supérieure Polytechnique de Douala", icon:"⚙️", statut:"actif",
-    date:"15 Juin 2026", lieu:"Douala, ENSPD", montant:"12 000 FCFA", duree:"8 semaines",
-    niveau:"Bac C/D/E", places:"150", matieres:["Mathématiques","Physique","Chimie","Informatique","Français"] },
-  { id:2, nom:"IUT", ecole:"Institut Universitaire de Technologie", icon:"🔬", statut:"actif",
-    date:"20 Juin 2026", lieu:"Douala / Bafoussam", montant:"8 000 FCFA", duree:"6 semaines",
-    niveau:"Bac (toutes séries)", places:"300", matieres:["Mathématiques","Physique","Logique & Raisonnement","Français"] },
-  { id:3, nom:"Médecine", ecole:"Faculté de Médecine et des Sciences Biomédicales", icon:"🩺", statut:"actif",
-    date:"5 Juillet 2026", lieu:"Yaoundé, FMSB", montant:"15 000 FCFA", duree:"10 semaines",
-    niveau:"Bac C/D", places:"200", matieres:["Biologie","Chimie","Physique","Mathématiques","Français"] },
-  { id:4, nom:"ENSET", ecole:"École Normale Supérieure de l'Enseignement Technique", icon:"🛠️", statut:"bientot",
-    date:"10 Juillet 2026", lieu:"Douala, ENSET", montant:"10 000 FCFA", duree:"7 semaines",
-    niveau:"Bac+2 technique", places:"80", matieres:["Mathématiques","Physique","Électronique","Informatique"] },
-  { id:5, nom:"IAI-Cameroun", ecole:"Institut Africain d'Informatique", icon:"💻", statut:"bientot",
-    date:"18 Juillet 2026", lieu:"Yaoundé, IAI", montant:"20 000 FCFA", duree:"8 semaines",
-    niveau:"Bac ou Bac+2", places:"100", matieres:["Mathématiques","Informatique","Logique","Anglais","Français"] },
-  { id:6, nom:"ENSPT", ecole:"École Nationale Supérieure des Postes et Télécommunications", icon:"📡", statut:"bientot",
-    date:"25 Juillet 2026", lieu:"Yaoundé, ENSPT", montant:"10 000 FCFA", duree:"6 semaines",
-    niveau:"Bac+2", places:"60", matieres:["Mathématiques","Physique","Électronique","Informatique"] },
-  { id:7, nom:"EENSTP", ecole:"École des Travaux Publics", icon:"🏗️", statut:"bientot",
-    date:"15 Août 2026", lieu:"Yaoundé", montant:"10 000 FCFA", duree:"7 semaines",
-    niveau:"Bac C/D", places:"120", matieres:["Mathématiques","Physique","Dessin Technique"] },
-  { id:8, nom:"ESSEC Douala", ecole:"École Supérieure des Sciences Économiques et Commerciales", icon:"💼", statut:"passe",
-    date:"10 Avril 2026", lieu:"Douala, ESSEC", montant:"15 000 FCFA", duree:"6 semaines",
-    niveau:"Bac/Bac+1", places:"100", matieres:["Mathématiques","Économie","Français","Anglais","Culture Générale"] },
-  { id:9, nom:"ENS", ecole:"École Normale Supérieure", icon:"📖", statut:"passe",
-    date:"20 Mars 2026", lieu:"Yaoundé, ENS", montant:"8 000 FCFA", duree:"5 semaines",
-    niveau:"Bac", places:"200", matieres:["Français","Histoire-Géo","Philosophie","Mathématiques"] },
+  {
+    id: 1, nom: "ENSPD", ecole: "École Nationale Supérieure Polytechnique de Douala",
+    Icon: FiSettings, statut: "actif",
+    date: "15 Juin 2026", lieu: "Douala, ENSPD", montant: "12 000 FCFA", duree: "8 semaines",
+    niveau: "Bac C/D/E", places: "150",
+    matieres: ["Mathématiques", "Physique", "Chimie", "Informatique", "Français"]
+  },
+  {
+    id: 2, nom: "IUT", ecole: "Institut Universitaire de Technologie",
+    Icon: FiActivity, statut: "actif",
+    date: "20 Juin 2026", lieu: "Douala / Bafoussam", montant: "8 000 FCFA", duree: "6 semaines",
+    niveau: "Bac (toutes séries)", places: "300",
+    matieres: ["Mathématiques", "Physique", "Logique & Raisonnement", "Français"]
+  },
+  {
+    id: 3, nom: "Médecine", ecole: "Faculté de Médecine et des Sciences Biomédicales",
+    Icon: GiMedicalPack, statut: "actif",
+    date: "5 Juillet 2026", lieu: "Yaoundé, FMSB", montant: "15 000 FCFA", duree: "10 semaines",
+    niveau: "Bac C/D", places: "200",
+    matieres: ["Biologie", "Chimie", "Physique", "Mathématiques", "Français"]
+  },
+  {
+    id: 4, nom: "ENSET", ecole: "École Normale Supérieure de l'Enseignement Technique",
+    Icon: FiTool, statut: "bientot",
+    date: "10 Juillet 2026", lieu: "Douala, ENSET", montant: "10 000 FCFA", duree: "7 semaines",
+    niveau: "Bac+2 technique", places: "80",
+    matieres: ["Mathématiques", "Physique", "Électronique", "Informatique"]
+  },
+  {
+    id: 5, nom: "IAI-Cameroun", ecole: "Institut Africain d'Informatique",
+    Icon: FiMonitor, statut: "bientot",
+    date: "18 Juillet 2026", lieu: "Yaoundé, IAI", montant: "20 000 FCFA", duree: "8 semaines",
+    niveau: "Bac ou Bac+2", places: "100",
+    matieres: ["Mathématiques", "Informatique", "Logique", "Anglais", "Français"]
+  },
+  {
+    id: 6, nom: "ENSPT", ecole: "École Nationale Supérieure des Postes et Télécommunications",
+    Icon: FiRadio, statut: "bientot",
+    date: "25 Juillet 2026", lieu: "Yaoundé, ENSPT", montant: "10 000 FCFA", duree: "6 semaines",
+    niveau: "Bac+2", places: "60",
+    matieres: ["Mathématiques", "Physique", "Électronique", "Informatique"]
+  },
+  {
+    id: 7, nom: "EENSTP", ecole: "École des Travaux Publics",
+    Icon: MdConstruction, statut: "bientot",
+    date: "15 Août 2026", lieu: "Yaoundé", montant: "10 000 FCFA", duree: "7 semaines",
+    niveau: "Bac C/D", places: "120",
+    matieres: ["Mathématiques", "Physique", "Dessin Technique"]
+  },
+  {
+    id: 8, nom: "ESSEC Douala", ecole: "École Supérieure des Sciences Économiques et Commerciales",
+    Icon: FiBriefcase, statut: "passe",
+    date: "10 Avril 2026", lieu: "Douala, ESSEC", montant: "15 000 FCFA", duree: "6 semaines",
+    niveau: "Bac/Bac+1", places: "100",
+    matieres: ["Mathématiques", "Économie", "Français", "Anglais", "Culture Générale"]
+  },
+  {
+    id: 9, nom: "ENS", ecole: "École Normale Supérieure",
+    Icon: FiBookOpen, statut: "passe",
+    date: "20 Mars 2026", lieu: "Yaoundé, ENS", montant: "8 000 FCFA", duree: "5 semaines",
+    niveau: "Bac", places: "200",
+    matieres: ["Français", "Histoire-Géo", "Philosophie", "Mathématiques"]
+  },
 ];
 
 type Concour = typeof concours[0];
+
+const pillClass = (statut: string) => {
+  const base = "px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 w-fit";
+  if (statut === "actif") return `${base} bg-green-100 text-green-800`;
+  if (statut === "bientot") return `${base} bg-yellow-100 text-yellow-800`;
+  return `${base} bg-gray-100 text-gray-500`;
+};
+
+const StatutDot = ({ statut }: { statut: string }) => {
+  if (statut === "actif") return <span className="w-2 h-2 rounded-full bg-green-500 inline-block shrink-0" />;
+  if (statut === "bientot") return <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block shrink-0" />;
+  return <span className="w-2 h-2 rounded-full bg-gray-400 inline-block shrink-0" />;
+};
+
+const pillLabel = (statut: string) =>
+  statut === "actif" ? "Actif" : statut === "bientot" ? "Bientôt" : "Passé";
 
 export default function Concours() {
   const navigate = useNavigate();
@@ -40,114 +101,121 @@ export default function Concours() {
 
   const filtered = filtre === "tous" ? concours : concours.filter(c => c.statut === filtre);
 
-  const pillStyle = (statut: string) => ({
-    padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700,
-    background: statut === "actif" ? "#dcfce7" : statut === "bientot" ? "#fef9c3" : "#f3f4f6",
-    color: statut === "actif" ? "#166534" : statut === "bientot" ? "#854d0e" : "#6b7280",
-  });
-
-  const pillLabel = (statut: string) =>
-    statut === "actif" ? "🟢 Actif" : statut === "bientot" ? "🟡 Bientôt" : "⚫ Passé";
-
   return (
-    <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-
+    <div
+      className="min-h-screen font-[Plus_Jakarta_Sans]"
+      style={{ background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)" }}
+    >
       {/* NAVBAR */}
-      <nav style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: "#fff", borderBottom: "1px solid #e5e7eb",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 48px", height: 64
-      }}>
-        <span onClick={() => navigate("/")} style={{
-          fontWeight: 800, fontSize: 20, color: "#1a7c3e", cursor: "pointer"
-        }}>LuXPREPA</span>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={() => navigate("/login")} style={{
-            padding: "8px 20px", borderRadius: 8, border: "1.5px solid #1a7c3e",
-            color: "#1a7c3e", fontWeight: 600, background: "white", cursor: "pointer", fontSize: 14
-          }}>Se connecter</button>
-          <button onClick={() => navigate("/register")} style={{
-            padding: "8px 20px", borderRadius: 8, background: "#1a7c3e",
-            color: "white", fontWeight: 600, border: "none", cursor: "pointer", fontSize: 14
-          }}>S'inscrire</button>
+      <nav className="sticky top-0 z-[100] bg-white border-b border-gray-200 flex items-center justify-between px-12 h-16">
+        <div onClick={() => navigate("/")} className="flex items-center cursor-pointer">
+          <img src={logo} className="h-12 w-auto" alt="logo" />
+        </div>
+        <div className="flex gap-2.5">
+          <button
+            onClick={() => navigate("/login")}
+            className="flex items-center gap-2 px-5 py-2 rounded-lg border border-[#1a7c3e] text-[#1a7c3e] font-semibold bg-white cursor-pointer text-sm hover:bg-green-50 transition-colors"
+          >
+            <FiLogIn size={15} />
+            Se connecter
+          </button>
+          <button
+            onClick={() => navigate("/register")}
+            className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#1a7c3e] text-white font-semibold border-none cursor-pointer text-sm hover:bg-green-800 transition-colors"
+          >
+            <FiUserPlus size={15} />
+            S'inscrire
+          </button>
         </div>
       </nav>
 
       {/* HEADER */}
-      <div style={{ background: "#0a0a0a", padding: "40px 80px" }}>
-        <h1 style={{ fontFamily: "'Clash Display', sans-serif", fontSize: 36, color: "#fff", margin: 0 }}>
+      <div className="bg-[#0a0a0a] px-20 py-10">
+        <h1 className="font-[Clash_Display] text-4xl text-white m-0">
           Concours disponibles
         </h1>
-        <p style={{ color: "#888", fontSize: 14, marginTop: 6 }}>
+        <p className="text-[#888] text-sm mt-1.5">
           Trouvez votre concours et commencez votre préparation dès aujourd'hui
         </p>
       </div>
 
       {/* FILTRES */}
-      <div style={{
-        padding: "20px 80px 0", display: "flex", gap: 10,
-        borderBottom: "1px solid #e5e7eb", flexWrap: "wrap"
-      }}>
+      <div className="px-20 pt-5 flex gap-2.5 border-b border-gray-200 flex-wrap">
         {[
           { val: "tous", label: "Tous" },
-          { val: "actif", label: "🟢 Actifs" },
-          { val: "bientot", label: "🟡 Bientôt" },
-          { val: "passe", label: "⚫ Passés" },
+          { val: "actif", label: "Actifs" },
+          { val: "bientot", label: "Bientôt" },
+          { val: "passe", label: "Passés" },
         ].map(f => (
-          <button key={f.val} onClick={() => setFiltre(f.val)} style={{
-            padding: "8px 18px", borderRadius: 20, fontSize: 13, fontWeight: 600,
-            cursor: "pointer", marginBottom: 12,
-            border: filtre === f.val ? "none" : "1.5px solid #e5e7eb",
-            background: filtre === f.val ? "#1a7c3e" : "#fff",
-            color: filtre === f.val ? "#fff" : "#666",
-          }}>{f.label}</button>
+          <button
+            key={f.val}
+            onClick={() => setFiltre(f.val)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold cursor-pointer mb-3 transition-colors ${
+              filtre === f.val
+                ? "bg-[#1a7c3e] text-white border-none"
+                : "bg-white text-gray-500 border border-gray-200 hover:border-gray-400"
+            }`}
+          >
+            {f.val !== "tous" && (
+              <span className={`w-2 h-2 rounded-full shrink-0 ${
+                f.val === "actif" ? "bg-green-500" :
+                f.val === "bientot" ? "bg-yellow-400" : "bg-gray-400"
+              }`} />
+            )}
+            {f.label}
+          </button>
         ))}
       </div>
 
       {/* GRILLE CONCOURS */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-        gap: 20, padding: "32px 80px 56px"
-      }}>
+      <div className="grid grid-cols-3 gap-5 px-20 pt-8 pb-14">
         {filtered.map(c => (
-          <div key={c.id} style={{
-            border: "1px solid #e5e7eb", borderRadius: 16, overflow: "hidden",
-            display: "flex", flexDirection: "column"
-          }}>
-            <div style={{ background: "#f9fafb", padding: "24px 20px 16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <span style={{ fontSize: 32 }}>{c.icon}</span>
-                <span style={pillStyle(c.statut)}>{pillLabel(c.statut)}</span>
+          <div
+            key={c.id}
+            className="border border-gray-200 rounded-2xl overflow-hidden flex flex-col bg-white"
+          >
+            {/* Card header */}
+            <div className="bg-gray-50 px-5 pt-6 pb-4">
+              <div className="flex justify-between items-center mb-3">
+                <div className="w-12 h-12 rounded-xl bg-[#1a7c3e]/10 flex items-center justify-center">
+                  <c.Icon size={24} className="text-[#1a7c3e]" />
+                </div>
+                <span className={pillClass(c.statut)}>
+                  <StatutDot statut={c.statut} />
+                  {pillLabel(c.statut)}
+                </span>
               </div>
-              <div style={{ fontWeight: 700, fontSize: 18, color: "#0a0a0a" }}>{c.nom}</div>
-              <div style={{ color: "#666", fontSize: 13, marginTop: 4 }}>{c.ecole}</div>
+              <div className="font-bold text-lg text-[#0a0a0a]">{c.nom}</div>
+              <div className="text-gray-500 text-[13px] mt-1 leading-tight">{c.ecole}</div>
             </div>
-            <div style={{ padding: "16px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+
+            {/* Card body */}
+            <div className="px-5 pt-4 pb-5 flex-1 flex flex-col">
+              <div className="grid grid-cols-2 gap-2.5 mb-4">
                 {[
-                  { icon: "📅", label: "Date", val: c.date },
-                  { icon: "📍", label: "Lieu", val: c.lieu.split(",")[0] },
-                  { icon: "💰", label: "Frais", val: c.montant },
-                  { icon: "⏱️", label: "Préparation", val: c.duree },
+                  { Icon: FiCalendar, label: "Date", val: c.date },
+                  { Icon: FiMapPin, label: "Lieu", val: c.lieu.split(",")[0] },
+                  { Icon: FiDollarSign, label: "Frais", val: c.montant },
+                  { Icon: FiClock, label: "Préparation", val: c.duree },
                 ].map(d => (
-                  <div key={d.label} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 16 }}>{d.icon}</span>
+                  <div key={d.label} className="flex gap-2 items-start">
+                    <d.Icon size={14} className="text-[#1a7c3e] mt-0.5 shrink-0" />
                     <div>
-                      <div style={{ fontSize: 11, color: "#9ca3af", fontWeight: 600 }}>{d.label}</div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>{d.val}</div>
+                      <div className="text-[11px] text-gray-400 font-semibold">{d.label}</div>
+                      <div className="text-[13px] font-semibold text-gray-900">{d.val}</div>
                     </div>
                   </div>
                 ))}
               </div>
-              <button onClick={() => setModal(c)} style={{
-                marginTop: "auto", width: "100%", padding: "11px",
-                borderRadius: 10, border: "none",
-                background: c.statut === "passe" ? "#f3f4f6" : "#1a7c3e",
-                color: c.statut === "passe" ? "#6b7280" : "#fff",
-                fontWeight: 700, fontSize: 14, cursor: "pointer"
-              }}>
-                {c.statut === "passe" ? "Voir les détails" : "Voir les détails & s'inscrire"} →
+              <button
+                onClick={() => setModal(c)}
+                className={`mt-auto w-full py-[11px] rounded-[10px] border-none font-bold text-sm cursor-pointer transition-opacity hover:opacity-90 ${
+                  c.statut === "passe"
+                    ? "bg-gray-100 text-gray-500"
+                    : "bg-[#1a7c3e] text-white"
+                }`}
+              >
+                {c.statut === "passe" ? "Voir les détails →" : "Voir les détails & s'inscrire →"}
               </button>
             </div>
           </div>
@@ -156,75 +224,92 @@ export default function Concours() {
 
       {/* MODAL */}
       {modal && (
-        <div onClick={() => setModal(null)} style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          zIndex: 200, padding: 20
-        }}>
-          <div onClick={e => e.stopPropagation()} style={{
-            background: "#fff", borderRadius: 20, width: "100%", maxWidth: 520,
-            maxHeight: "90vh", overflowY: "auto", padding: 32
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+        <div
+          onClick={() => setModal(null)}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-5"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="bg-white rounded-2xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto p-8"
+          >
+            {/* Modal header */}
+            <div className="flex justify-between items-start mb-5">
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-                  <span style={{ fontSize: 32 }}>{modal.icon}</span>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 rounded-xl bg-[#1a7c3e]/10 flex items-center justify-center shrink-0">
+                    <modal.Icon size={26} className="text-[#1a7c3e]" />
+                  </div>
                   <div>
-                    <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{modal.nom}</h2>
-                    <p style={{ color: "#666", fontSize: 13, margin: 0 }}>{modal.ecole}</p>
+                    <h2 className="text-[22px] font-extrabold m-0">{modal.nom}</h2>
+                    <p className="text-gray-500 text-[13px] m-0">{modal.ecole}</p>
                   </div>
                 </div>
-                <span style={pillStyle(modal.statut)}>{pillLabel(modal.statut)}</span>
+                <span className={pillClass(modal.statut)}>
+                  <StatutDot statut={modal.statut} />
+                  {pillLabel(modal.statut)}
+                </span>
               </div>
-              <button onClick={() => setModal(null)} style={{
-                background: "#f3f4f6", border: "none", borderRadius: 8,
-                padding: "6px 12px", cursor: "pointer", fontSize: 16
-              }}>✕</button>
+              <button
+                onClick={() => setModal(null)}
+                className="bg-gray-100 border-none rounded-lg p-2 cursor-pointer hover:bg-gray-200 transition-colors text-gray-600"
+              >
+                <FiX size={18} />
+              </button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+            {/* Modal info grid */}
+            <div className="grid grid-cols-2 gap-3 mb-5">
               {[
-                { icon: "📅", label: "Date", val: modal.date },
-                { icon: "📍", label: "Lieu", val: modal.lieu },
-                { icon: "💰", label: "Frais d'inscription", val: modal.montant },
-                { icon: "⏱️", label: "Durée préparation", val: modal.duree },
-                { icon: "🎓", label: "Niveau requis", val: modal.niveau },
-                { icon: "👥", label: "Places disponibles", val: modal.places + " places" },
+                { Icon: FiCalendar, label: "Date", val: modal.date },
+                { Icon: FiMapPin, label: "Lieu", val: modal.lieu },
+                { Icon: FiDollarSign, label: "Frais d'inscription", val: modal.montant },
+                { Icon: FiClock, label: "Durée préparation", val: modal.duree },
+                { Icon: FiAward, label: "Niveau requis", val: modal.niveau },
+                { Icon: FiUsers, label: "Places disponibles", val: modal.places + " places" },
               ].map(d => (
-                <div key={d.label} style={{
-                  background: "#f9fafb", borderRadius: 10, padding: "12px 14px"
-                }}>
-                  <div style={{ fontSize: 11, color: "#9ca3af", fontWeight: 600, marginBottom: 2 }}>{d.icon} {d.label}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{d.val}</div>
+                <div key={d.label} className="bg-gray-50 rounded-[10px] px-3.5 py-3">
+                  <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-semibold mb-1">
+                    <d.Icon size={11} />
+                    {d.label}
+                  </div>
+                  <div className="text-sm font-bold text-gray-900">{d.val}</div>
                 </div>
               ))}
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>Matières au programme</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {/* Matières */}
+            <div className="mb-5">
+              <div className="flex items-center gap-2 font-bold text-sm mb-2.5">
+                <FiBookOpen size={15} className="text-[#1a7c3e]" />
+                Matières au programme
+              </div>
+              <div className="flex flex-wrap gap-2">
                 {modal.matieres.map(m => (
-                  <span key={m} style={{
-                    background: "#d4f0df", color: "#166534",
-                    borderRadius: 20, padding: "4px 12px", fontSize: 13, fontWeight: 600
-                  }}>{m}</span>
+                  <span
+                    key={m}
+                    className="bg-[#d4f0df] text-green-800 rounded-full px-3 py-1 text-[13px] font-semibold"
+                  >
+                    {m}
+                  </span>
                 ))}
               </div>
             </div>
 
-            <button disabled={modal.statut === "passe"} style={{
-              width: "100%", padding: 14, borderRadius: 12, border: "none",
-              background: modal.statut === "passe" ? "#e5e7eb" : "#1a7c3e",
-              color: modal.statut === "passe" ? "#9ca3af" : "#fff",
-              fontWeight: 700, fontSize: 15,
-              cursor: modal.statut === "passe" ? "not-allowed" : "pointer"
-            }}>
+            {/* CTA */}
+            <button
+              disabled={modal.statut === "passe"}
+              className={`w-full py-3.5 rounded-xl border-none font-bold text-[15px] transition-opacity flex items-center justify-center gap-2 ${
+                modal.statut === "passe"
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-[#1a7c3e] text-white cursor-pointer hover:opacity-90"
+              }`}
+            >
+              {modal.statut !== "passe" && <FiUserPlus size={17} />}
               {modal.statut === "passe" ? "Session terminée" : "S'inscrire à ce concours"}
             </button>
           </div>
         </div>
       )}
-
     </div>
   );
 }

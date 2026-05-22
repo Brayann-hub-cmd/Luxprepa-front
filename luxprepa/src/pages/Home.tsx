@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import logo from '../images/logo.jpg'
 import { BiArrowToRight } from "react-icons/bi";
+import { FiLogIn,FiUserPlus } from "react-icons/fi";
 export default function Home() {
   const navigate = useNavigate();
 
@@ -12,25 +13,25 @@ export default function Home() {
     }}>
 
       {/* NAVBAR */}
-      <nav className="gap-2" style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 40px", background: "white",
-        boxShadow: "0 1px 8px rgba(0,0,0,0.06)"
-      }}>
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
-          <img src={logo} className="h-[36px] w-auto" />
+      <nav className="sticky top-0 z-[100] bg-white border-b border-gray-200 flex items-center justify-between px-12 h-16">
+        <div onClick={() => navigate("/")} className="flex items-center cursor-pointer">
+          <img src={logo} className="h-12 w-auto" alt="logo" />
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <button onClick={() => navigate("/login")} style={{
-            padding: "8px 20px", borderRadius: 8, border: "1.5px solid #166534",
-            color: "#166534", fontWeight: 600, background: "white",
-            cursor: "pointer", fontSize: 14
-          }}>Se connecter</button>
-          <button onClick={() => navigate("/register")} style={{
-            padding: "8px 20px", borderRadius: 8, background: "#166534",
-            color: "white", fontWeight: 600, border: "none",
-            cursor: "pointer", fontSize: 14
-          }}>S'inscrire</button>
+        <div className="flex gap-2.5">
+          <button
+            onClick={() => navigate("/login")}
+            className="flex items-center gap-2 px-5 py-2 rounded-lg border border-[#1a7c3e] text-[#1a7c3e] font-semibold bg-white cursor-pointer text-sm hover:bg-green-50 transition-colors"
+          >
+            <FiLogIn size={15} />
+            Se connecter
+          </button>
+          <button
+            onClick={() => navigate("/register")}
+            className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#1a7c3e] text-white font-semibold border-none cursor-pointer text-sm hover:bg-green-800 transition-colors"
+          >
+            <FiUserPlus size={15} />
+            S'inscrire
+          </button>
         </div>
       </nav>
 
@@ -49,7 +50,7 @@ export default function Home() {
           La plateforme qui accompagne les élèves. Des anciens sujets corrigés, des examens type concours chaque semaines, assistance à la constitution de vos dossiers de concours, preparations journalières intensives avec des professeurs qui savent partager leur savoir. 
         </p>
         <button className="flex flex-row items-center justify-center" onClick={() => navigate("/register")} style={{
-          padding: "15px 40px", borderRadius: 12, background: "#166534",
+          padding: "15px 40px", borderRadius: 12, background: "#576b5f",
           color: "white", fontWeight: 700, fontSize: 16, border: "none",
           cursor: "pointer", boxShadow: "0 4px 20px rgba(22,101,52,.35)"
         }}>Commencer gratuitement <BiArrowToRight size={20}/></button>

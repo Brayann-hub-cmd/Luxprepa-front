@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../api";
 import toast from "react-hot-toast";
+import { BiLock } from "react-icons/bi";
 export default function VerifyCode() {
   const navigate = useNavigate();
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -48,12 +49,15 @@ export default function VerifyCode() {
 
     try {
       const resultat = code.join('');
-      const tel = localStorage.getItem("telephone")
+      localStorage.setItem('telephone',"694575094")
+      const tel = localStorage.getItem("telephone").toString()
       const response = await authApi.confirmer({ telephone: tel, code: resultat })
       toast.success(response.message)
+      console.log(response.message);
       setLoading(false)
     } catch (error) {
       toast.error("une erreur est survenue")
+      console.log(error.response.message);
       setLoading(false)
     }
     setTimeout(() => {
@@ -62,10 +66,18 @@ export default function VerifyCode() {
     }, 2000);
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     setResent(true);
     setCode(["", "", "", "", "", ""]);
     inputs.current[0]?.focus();
+    
+    const tel = localStorage.getItem("telephone").toString()
+    try {
+      const response = await authApi.renvoyerCode(tel)
+      console.log(response.message);
+    } catch (error) {
+      console.log(error.response.erreur);
+    }
     setTimeout(() => setResent(false), 4000);
   };
 
@@ -99,12 +111,9 @@ export default function VerifyCode() {
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 16px",
             fontSize: 22
-          }}>🔐</div>
-          <h1 style={{ color: "#e6edf3", fontSize: 20, fontWeight: 700, margin: "0 0 8px" }}>
-            Vérification en deux étapes
-          </h1>
+          }}><BiLock color="white" size={25} /></div>
           <p style={{ color: "#8b949e", fontSize: 13.5, margin: 0, lineHeight: 1.6 }}>
-            Entrez le code à 6 chiffres envoyé à votre adresse e-mail ou téléphone.
+            Entrez le code à 6 chiffres envoyé à votre messagerie téléphonique.
           </p>
         </div>
 

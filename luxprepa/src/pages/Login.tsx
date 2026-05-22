@@ -59,6 +59,7 @@ export default function Login() {
       setLoading(false)
       navigate('/')
     } catch (error) {
+      console.log(error.response.erreur);
       setLoading(false)
     }
     // await api.post("/auth/login", { telephone: phone, password, role });
@@ -121,7 +122,7 @@ export default function Login() {
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-            <img src={logo} className="h-[48px] w-auto" />
+            <img src={logo} className="h-[36px] w-auto" />
           </div>
           <h1 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",

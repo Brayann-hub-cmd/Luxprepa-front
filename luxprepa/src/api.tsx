@@ -58,6 +58,21 @@ export interface Concours {
     sessions?: Session[]
 }
 
+export interface Matiere {
+    id: string
+    nom: string
+    description?: string
+}
+
+export interface CreerMatiereData {
+    nom: string
+    description?: string
+}
+
+export interface ResponseMessage{
+    message:string
+}
+
 export interface MatiereConcours {
     id: string
     nom: string
@@ -331,7 +346,56 @@ export const authApi = {
     // ── Récupérer user depuis localStorage ──
     getUserLocal: (): User | null => tokenUtils.getUser(),
 }
+// ═══════════════════════════════════════════════════════════
+// MATIERES
+// ═══════════════════════════════════════════════════════════
 
+export const matiereApi = {
+    liste: async (): Promise<Matiere[]> => {
+        const response = await fetch(`${BASE_URL}/matieres/`, {
+            method: "GET",
+            headers: getHeaders(),
+        })
+        return handleResponse<Matiere[]>(response)
+    },
+
+    detail: async (id: string): Promise<Matiere> => {
+        const response = await fetch(`${BASE_URL}/matieres/${id}/`, {
+            method: "GET",
+            headers: getHeaders(),
+        })
+        return handleResponse<Matiere>(response)
+    },
+
+    creer: async (data: CreerMatiereData): Promise<{ message: string; matiere: Matiere }> => {
+        const response = await fetch(`${BASE_URL}/matieres/`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        })
+        return handleResponse<{ message: string; matiere: Matiere }>(response)
+    },
+
+    modifier: async (
+        id: string,
+        data: Partial<CreerMatiereData>
+    ): Promise<{ message: string; matiere: Matiere }> => {
+        const response = await fetch(`${BASE_URL}/matieres/${id}/`, {
+            method: "PUT",
+            headers: getHeaders(true),
+            body: JSON.stringify(data)
+        })
+        return handleResponse<{ message: string; matiere: Matiere }>(response)
+    },
+
+    supprimer: async (id: string):Promise<ResponseMessage> =>{
+        const response = await fetch(`${BASE_URL}/matieres/${id}/`,{
+            method:"DELETE",
+            headers:getHeaders(true)
+        })
+        return handleResponse<ResponseMessage>(response)
+    }
+}
 
 // ═══════════════════════════════════════════════════════════
 // CONCOURS API
