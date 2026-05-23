@@ -1,21 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"
 
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: BASE_URL,
-})
-
-api.interceptors.request.use((configs) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-        configs.headers['Authorization'] = `Bearer ${token}`
-    }
-    return configs
-})
-
-export default api
-
 /*
     token orange :
     
@@ -69,14 +53,22 @@ export interface CreerMatiereData {
     description?: string
 }
 
-export interface ResponseMessage{
-    message:string
+export interface ResponseMessage {
+    message: string
 }
 
 export interface MatiereConcours {
     id: string
     nom: string
-    description?: string
+    concours: string
+    coefficient: number
+    matiere_nom: string
+    concours_nom: string
+}
+
+export interface CreerMatiereConcourData {
+    matiere: string
+    concours: string
     coefficient: number
 }
 
@@ -128,6 +120,7 @@ export interface Annonce {
     type: "info" | "alerte" | "resultat" | "autre"
     is_public: boolean
     admin_nom: string
+    image: string | null
     created_at: string
 }
 
@@ -346,9 +339,6 @@ export const authApi = {
     // ── Récupérer user depuis localStorage ──
     getUserLocal: (): User | null => tokenUtils.getUser(),
 }
-// ═══════════════════════════════════════════════════════════
-// MATIERES
-// ═══════════════════════════════════════════════════════════
 
 export const matiereApi = {
     liste: async (): Promise<Matiere[]> => {
@@ -388,18 +378,54 @@ export const matiereApi = {
         return handleResponse<{ message: string; matiere: Matiere }>(response)
     },
 
-    supprimer: async (id: string):Promise<ResponseMessage> =>{
-        const response = await fetch(`${BASE_URL}/matieres/${id}/`,{
-            method:"DELETE",
-            headers:getHeaders(true)
+    supprimer: async (id: string): Promise<ResponseMessage> => {
+        const response = await fetch(`${BASE_URL}/matieres/${id}/`, {
+            method: "DELETE",
+            headers: getHeaders(true)
         })
         return handleResponse<ResponseMessage>(response)
     }
 }
 
-// ═══════════════════════════════════════════════════════════
-// CONCOURS API
-// ═══════════════════════════════════════════════════════════
+export const matiereConcourApi = {
+    liste: async (): Promise<MatiereConcours[]> => {
+        const response = await fetch(`${BASE_URL}/matiere-concours/`, {
+            method: "GET",
+            headers: getHeaders(),
+        })
+        return handleResponse<MatiereConcours[]>(response)
+    },
+    detail: async (id: string): Promise<MatiereConcours> => {
+        const response = await fetch(`${BASE_URL}/matiere-concours/${id}/`, {
+            method: "GET",
+            headers: getHeaders(),
+        })
+        return handleResponse<MatiereConcours>(response)
+    },
+    creer: async (data: CreerMatiereConcourData): Promise<{ message: string, matiere_concours: MatiereConcours }> => {
+        const response = await fetch(`${BASE_URL}/matiere-concours/`, {
+            method: "POST",
+            headers: getHeaders(true),
+            body: JSON.stringify(data)
+        })
+        return handleResponse<{ message: string, matiere_concours: MatiereConcours }>(response)
+    },
+    modifierCoef: async (id: string, coefficient: number): Promise<{ message: string, matiere_concours: MatiereConcours }> => {
+        const response = await fetch(`${BASE_URL}/matiere-concours/${id}/`, {
+            method: "PATCH",
+            headers: getHeaders(true),
+            body: JSON.stringify({ coefficient })
+        })
+        return handleResponse<{ message: string, matiere_concours: MatiereConcours }>(response)
+    },
+    supprimer: async (id: string): Promise<ResponseMessage> => {
+        const response = await fetch(`${BASE_URL}/matiere-concours/${id}/`,{
+            method: "DELETE",
+            headers: getHeaders(true),
+        })
+        return handleResponse<ResponseMessage>(response)
+    }
+}
 
 export const concoursApi = {
 
@@ -462,11 +488,6 @@ export const concoursApi = {
     },
 }
 
-
-// ═══════════════════════════════════════════════════════════
-// INSCRIPTIONS API
-// ═══════════════════════════════════════════════════════════
-
 export const inscriptionApi = {
 
     liste: async (): Promise<Inscription[]> => {
@@ -503,11 +524,6 @@ export const inscriptionApi = {
     },
 }
 
-
-// ═══════════════════════════════════════════════════════════
-// PAIEMENTS API
-// ═══════════════════════════════════════════════════════════
-
 export const paiementApi = {
 
     liste: async (): Promise<Paiement[]> => {
@@ -530,11 +546,6 @@ export const paiementApi = {
         return handleResponse<{ message: string; paiement: Paiement }>(response)
     },
 }
-
-
-// ═══════════════════════════════════════════════════════════
-// SESSIONS API
-// ═══════════════════════════════════════════════════════════
 
 export const sessionApi = {
 
@@ -581,11 +592,6 @@ export const sessionApi = {
     },
 }
 
-
-// ═══════════════════════════════════════════════════════════
-// NOTES API
-// ═══════════════════════════════════════════════════════════
-
 export const noteApi = {
 
     liste: async (): Promise<Note[]> => {
@@ -629,11 +635,6 @@ export const noteApi = {
     },
 }
 
-
-// ═══════════════════════════════════════════════════════════
-// ANNONCES API
-// ═══════════════════════════════════════════════════════════
-
 export const annonceApi = {
 
     liste: async (): Promise<Annonce[]> => {
@@ -649,11 +650,21 @@ export const annonceApi = {
         contenu: string
         type: "info" | "alerte" | "resultat" | "autre"
         is_public: boolean
+        image?: File
     }): Promise<{ message: string; annonce: Annonce }> => {
+        const formData = new FormData()
+        formData.append('titre', data.titre)
+        formData.append('contenu', data.contenu)
+        formData.append('type', data.type)
+        formData.append('is_public', String(data.is_public))
+        if (data.image) formData.append('image', data.image)
+        const token = tokenUtils.recuperer()
         const response = await fetch(`${BASE_URL}/annonces/`, {
             method: "POST",
-            headers: getHeaders(true),
-            body: JSON.stringify(data),
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData,
         })
         return handleResponse<{ message: string; annonce: Annonce }>(response)
     },

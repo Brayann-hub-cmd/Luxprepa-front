@@ -33,6 +33,7 @@ export default function Home() {
             S'inscrire
           </button>
         </div>
+        
       </nav>
 
       {/* HERO */}

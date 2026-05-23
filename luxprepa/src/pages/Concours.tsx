@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import logo from '../images/logo.jpg';
 
 import {
-  FiSettings, FiCalendar, FiMapPin, FiDollarSign, FiClock,
+  FiSettings, FiCalendar, FiMapPin, FiClock,
   FiUsers, FiAward, FiLogIn, FiUserPlus, FiX, FiBookOpen,
   FiMonitor, FiRadio, FiTool, FiActivity, FiBriefcase,
 } from "react-icons/fi";
 import { GiMedicalPack } from "react-icons/gi";
 import { MdConstruction } from "react-icons/md";
-
+import { BiMoney } from "react-icons/bi";
 const concours = [
   {
     id: 1, nom: "ENSPD", ecole: "École Nationale Supérieure Polytechnique de Douala",
@@ -195,7 +195,7 @@ export default function Concours() {
                 {[
                   { Icon: FiCalendar, label: "Date", val: c.date },
                   { Icon: FiMapPin, label: "Lieu", val: c.lieu.split(",")[0] },
-                  { Icon: FiDollarSign, label: "Frais", val: c.montant },
+                  { Icon: BiMoney, label: "Frais", val: c.montant },
                   { Icon: FiClock, label: "Préparation", val: c.duree },
                 ].map(d => (
                   <div key={d.label} className="flex gap-2 items-start">

@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { authApi } from "../api";
 import toast from "react-hot-toast";
 import { BiLock } from "react-icons/bi";
 export default function VerifyCode() {
+  const location = useLocation()
+  const telephone = location.state?.telephone as string
   const navigate = useNavigate();
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>("");
+  const [renvoi,setRenvoi] = useState<boolean>(false)
   const [loading, setLoading] = useState(false);
   const [resent, setResent] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
@@ -46,17 +49,20 @@ export default function VerifyCode() {
       return;
     }
     setLoading(true);
+    setError(null)
 
     try {
       const resultat = code.join('');
-      const tel = localStorage.getItem("telephone") || ""
-      const response = await authApi.confirmer({telephone:tel,code:resultat})
+      const response = await authApi.confirmer({telephone:telephone,code:resultat})
       toast.success(response.message)
       console.log(response.message);
       setLoading(false)
     } catch (error) {
-      toast.error("une erreur est survenue")
-      console.log(error.response.message);
+      if (error instanceof Error){
+        setError(error.message)
+        console.log(error);
+      }
+    }finally{
       setLoading(false)
     }
     setTimeout(() => {

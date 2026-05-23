@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { BiCalendar } from "react-icons/bi";
+import { SiLevelsdotfyi } from "react-icons/si";
+import { RiParentFill } from "react-icons/ri";
+import { PiStudent } from "react-icons/pi";
 type Role = "eleve" | "parent";
 import { authApi } from "../api";
+import toast from "react-hot-toast";
 const LuxprepaLogo = () => (
   <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
     <span style={{ fontFamily: "Georgia, serif", fontWeight: 900, fontSize: 26, color: "#166534", letterSpacing: -1 }}>Lu</span>
@@ -43,8 +48,8 @@ const FieldIcon = ({ type }: { type: string }) => {
 };
 
 const ROLES = [
-  { key: "eleve" as Role, label: "Élève", emoji: "👨‍🎓" },
-  { key: "parent" as Role, label: "Parent", emoji: "👨‍👩‍👦" },
+  { key: "eleve" as Role, label: "Élève", emoji: <PiStudent size={20}/> },
+  { key: "parent" as Role, label: "Parent", emoji: <RiParentFill size={20}/> },
 ];
 
 export default function Register() {
@@ -52,13 +57,14 @@ export default function Register() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     nom: "", prenom: "", telephone: "",
-    password: "", role:"",niveau:"tle"
+    password: "", role:"eleve",niveau:undefined,date_naissance:"",tel_parent:""
   });
   const [confirmPassword,setConfirmPassword] = useState<string>("")
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
+  const [erreur,setErreur] = useState<string | null>(null)
   const navigate = useNavigate()
   const update = (key: string, val: string) =>
     setForm(p => ({ ...p, [key]: val }));
@@ -95,18 +101,21 @@ export default function Register() {
     e.preventDefault();
     if (!passwordMatch) return;
     setLoading(true);
+    setErreur(null)
     try {
-      console.log(form);
-      
-      const response =  await authApi.preInscription({...form,role:"eleve"})
-      localStorage.setItem('telephone',form.telephone)
+      const response =  await authApi.preInscription(form)
+      toast.success(response.message)
       if(response.message){
-        navigate('/verify')
+        navigate('/verify',{state:{telephone:form.telephone}})
       }
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error){
+        setErreur(error.message)
+        console.log(erreur);
+      }
+    }finally{
+      setLoading(false)
     }
-    setTimeout(() => setLoading(false), 2000);
   };
 
   return (
@@ -179,7 +188,7 @@ export default function Register() {
           ))}
         </div>
 
-        {/* Sélecteur de rôle — 3 boutons */}
+        {/* Sélecteur de rôle — 2 boutons */}
         <div style={{ display: "flex", background: "#f0fdf4", borderRadius: 12, padding: 4, marginBottom: 22, border: "1px solid #bbf7d0", gap: 4 }}>
           {ROLES.map(r => (
             <button key={r.key} className="role-tab" onClick={() => setRole(r.key)} style={{
@@ -232,6 +241,15 @@ export default function Register() {
                   onFocus={() => setFocused("telephone")} onBlur={() => setFocused(null)} />
               </div>
             </div>
+            <div>
+              <label style={labelStyle}>Date de naissance</label>
+              <div style={{ position: "relative" }}>
+                <span style={iconWrap}><BiCalendar size={20} color="grey" /></span>
+                <input type="date" value={form.date_naissance} required
+                  onChange={e => update("date_naissance", e.target.value)} style={inputStyle("date_naissance")}
+                  onFocus={() => setFocused("date_naissance")} onBlur={() => setFocused(null)} />
+              </div>
+            </div>
 
             <button type="submit" className="reg-btn" style={{
               marginTop: 4, padding: "13px", background: "#166534", color: "#fff",
@@ -247,7 +265,29 @@ export default function Register() {
         {/* ── ÉTAPE 2 ── */}
         {step === 2 && (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div>
+                <label style={labelStyle}>Tél. Parent</label>
+                <div style={{ position: "relative" }}>
+                  <span style={iconWrap}><RiParentFill size={20} color="grey"/></span>
+                  <input placeholder="6XX XXX XXX" value={form.tel_parent} required
+                    onChange={e => update("tel_parent", e.target.value)} style={inputStyle("tel_parent")}
+                    onFocus={() => setFocused("tel_parent")} onBlur={() => setFocused(null)} />
+                </div>
+              </div>
+              <div>
+                <label style={labelStyle}>Niveau</label>
+                <div style={{ position: "relative" }}>
+                  <span style={iconWrap}><SiLevelsdotfyi size={20} color="grey"/></span>
+                  <select value={form.niveau} required
+                    onChange={e => update("niveau", e.target.value)} style={inputStyle("niveau")}
+                    onFocus={() => setFocused("niveau")} onBlur={() => setFocused(null)} >
+                      <option value="tle">** Terminale **</option>
+                      <option value="post_bac">** BACC + **</option>
+                  </select>
+                </div>
+              </div>
+            </div>
             {/* Mot de passe */}
             <div>
               <label style={labelStyle}>Mot de passe</label>
