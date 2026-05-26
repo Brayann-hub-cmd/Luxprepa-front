@@ -56,7 +56,7 @@ export default function VerifyCode() {
       setLoading(false)
     } catch (error) {
       toast.error("une erreur est survenue")
-      console.log(error.response.message);
+      console.log(error?.message || "une erreur est survenue");
       setLoading(false)
     }
     setTimeout(() => {
