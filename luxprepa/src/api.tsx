@@ -24,7 +24,8 @@ export interface Prof extends User {
 
 export interface Eleve extends User {
     date_naissance?: string
-    tel_parent?: string
+    tel_parent?: string,
+    niveau?:string
 }
 
 // ── Concours ──

@@ -52,7 +52,6 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setErreur(null)
-    // TODO: appel API axios ici
     try {
       const response = await authApi.connexion({ telephone:phone, password: password })
       toast.success(response.message)
