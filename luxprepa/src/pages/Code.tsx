@@ -1,18 +1,26 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authApi } from "../api";
 import toast from "react-hot-toast";
 import { BiLock } from "react-icons/bi";
+import { FiAlertCircle } from "react-icons/fi";
+import { BiCheckCircle } from "react-icons/bi";
+import { BiArrowBack } from "react-icons/bi";
 export default function VerifyCode() {
+  const location = useLocation()
+  const telephone = location.state?.telephone as string
   const navigate = useNavigate();
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>("");
   const [loading, setLoading] = useState(false);
-  const [resent, setResent] = useState(false);
+  const [resent, setResent] = useState<boolean>(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     inputs.current[0]?.focus();
+    if (!telephone){
+      navigate("/register")
+    }
   }, []);
 
   const handleChange = (i: number, val: string) => {
@@ -46,40 +54,44 @@ export default function VerifyCode() {
       return;
     }
     setLoading(true);
-
+    setError(null)
     try {
-      const resultat = code.join('');
-      const tel = localStorage.getItem("telephone") || ""
-      const response = await authApi.confirmer({telephone:tel,code:resultat})
-      toast.success(response.message)
-      console.log(response.message);
-      setLoading(false)
+      const response = await authApi.confirmer({ telephone: telephone, code: full })
+      setTimeout(() => {
+        toast.success(response.message)
+        toast.success(`Bienvenue ${response.user.prenom} ${response.user.nom}`)
+        navigate("/");
+      }, 1000);
     } catch (error) {
       toast.error("une erreur est survenue")
       console.log(error?.message || "une erreur est survenue");
+      if (error instanceof Error) {
+        setError(error.message)
+        console.log(error);
+      }
+    } finally {
       setLoading(false)
     }
-    setTimeout(() => {
-      setLoading(false);
-      // navigate("/dashboard"); // décommentez quand prêt
-    }, 2000);
   };
 
   const handleResend = async () => {
     setResent(true);
     setCode(["", "", "", "", "", ""]);
     inputs.current[0]?.focus();
-    
-    const tel = localStorage.getItem("telephone").toString()
+    setError(null)
     try {
-      const response = await authApi.renvoyerCode(tel)
-      console.log(response.message);
+      await authApi.renvoyerCode(telephone)
+      toast.success(`Nouveau code envoyé avec succès!`)
     } catch (error) {
-      console.log(error.response.erreur);
+      if (error instanceof Error) {
+        setError(error.message)
+        console.log(error);
+      }
+    } finally {
+      setLoading(false)
     }
-    setTimeout(() => setResent(false), 4000);
   };
-
+  
   const filled = code.every(c => c !== "");
 
   return (
@@ -112,7 +124,7 @@ export default function VerifyCode() {
             fontSize: 22
           }}><BiLock color="white" size={25} /></div>
           <p style={{ color: "#8b949e", fontSize: 13.5, margin: 0, lineHeight: 1.6 }}>
-            Entrez le code à 6 chiffres envoyé à votre messagerie téléphonique.
+            Entrez le code à 6 chiffres envoyé au +237 {telephone}.
           </p>
         </div>
 
@@ -146,13 +158,13 @@ export default function VerifyCode() {
 
         {/* Erreur */}
         {error && (
-          <p style={{ color: "#f85149", fontSize: 12.5, margin: "8px 0 0" }}>⚠️ {error}</p>
+          <p className="flex flex-row items-center justify-center gap-2" style={{ color: "#f85149", fontSize: 12.5, margin: "8px 0 0" }}><FiAlertCircle size={20} color="orange"/> {error}</p>
         )}
 
         {/* Renvoi code */}
-        {resent && (
-          <p style={{ color: "#3fb950", fontSize: 12.5, margin: "10px 0 0" }}>
-            ✅ Code renvoyé avec succès !
+        {(resent && error===null) && (
+          <p className="flex flex-row items-center justify-center gap-2" style={{ color: "#3fb950", fontSize: 12.5, margin: "10px 0 0" }}>
+            <BiCheckCircle size={20} color="green"/>  Code renvoyé avec succès !
           </p>
         )}
 
@@ -195,11 +207,11 @@ export default function VerifyCode() {
         </p>
 
         {/* Retour */}
-        <p style={{ marginTop: 12 }}>
-          <span onClick={() => navigate("/login")} style={{
+        <div className="flex flex-row items-center justify-center gap-2" style={{ marginTop: 12 }}>
+          <span className="flex flex-row items-center justify-center gap-2" onClick={() => navigate("/register")} style={{
             color: "#8b949e", fontSize: 13, cursor: "pointer"
-          }}>← Retour à la connexion</span>
-        </p>
+          }}><BiArrowBack size={15} color="white"/> <label className="hover:text-green-500">Retour à l'inscription</label></span>
+        </div>
 
       </div>
 

@@ -381,7 +381,7 @@ export default function Concours() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {filtered.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-5xl mb-4">ðŸ”</p>
+            <p className="text-5xl mb-4">🔍</p>
             <p className="font-bold text-gray-800 text-lg">Aucun concours trouve</p>
             <p className="text-gray-400 text-sm mt-1">Essayez un autre terme</p>
           </div>

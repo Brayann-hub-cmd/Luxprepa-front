@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Concours from "./pages/Concours";
 import VerifyCode from "./pages/Code";
 import Dashboard from "./Dashboard";
+
 function App() {
   return (
     <BrowserRouter>

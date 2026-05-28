@@ -7,7 +7,6 @@ import { authApi } from "../api";
 import {toast} from "react-hot-toast";
 // ── Types ────────────────────────────────────────────────────
 type Role = "eleve" | "prof";
-
 // ── Eye Icon ─────────────────────────────────────────────────
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -40,7 +39,6 @@ const LockIcon = () => (
   </svg>
 );
 
-// ── Main Login Component ──────────────────────────────────────
 export default function Login() {
   const [role, setRole] = useState<Role>("eleve");
   const [phone, setPhone] = useState("");
@@ -48,10 +46,12 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [erreur,setErreur] = useState<string | null>(null)
   const navigate = useNavigate()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErreur(null)
     // TODO: appel API axios ici
     try {
       const response = await authApi.connexion({ telephone:phone, password: password })
@@ -59,11 +59,13 @@ export default function Login() {
       setLoading(false)
       navigate('/')
     } catch (error) {
-      console.log(error.response.erreur);
+      if (error instanceof Error){
+        setErreur(error.message)
+        console.log(erreur);
+      }
+    }finally{
       setLoading(false)
     }
-    // await api.post("/auth/login", { telephone: phone, password, role });
-    setTimeout(() => setLoading(false), 2000);
   };
 
   return (
