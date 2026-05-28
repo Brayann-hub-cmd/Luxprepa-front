@@ -55,7 +55,6 @@ export default function VerifyCode() {
     }
     setLoading(true);
     setError(null)
-
     try {
       const response = await authApi.confirmer({ telephone: telephone, code: full })
       setTimeout(() => {
