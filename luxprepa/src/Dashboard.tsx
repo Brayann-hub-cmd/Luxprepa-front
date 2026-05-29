@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface User {
   firstName: string;

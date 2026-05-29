@@ -21,74 +21,17 @@ import {
 } from "react-icons/hi2";
 import { BsCircleFill, BsCircleHalf } from "react-icons/bs";
 import { TbCircleOff } from "react-icons/tb";
-
+import { Link } from "react-router-dom";
+import {type Concours,type Matiere,type Session } from "../api";
 /* ─── TYPES ───────────────────────────────── */
 type Statut = "actif" | "bientot" | "passe";
 type Page = "accueil" | "concours" | "matieres" | "sessions";
 type SessTab = "encours" | "passees";
 
-interface Concour {
-  id: number;
-  nom: string;
-  ecole: string;
-  Icon: IconType;
-  statut: Statut;
-  date: string;
-  lieu: string;
-  montant: string;
-  duree: string;
-  niveau: string;
-  places: string;
-  matieres: string[];
-}
-
-interface Matiere {
-  Icon: IconType;
-  nom: string;
-  desc: string;
-  concours: string[];
-  coeff: string;
-}
-
-interface SessionData {
-  month: string;
-  day: string;
-  name: string;
-  lieu: string;
-  eleves: string;
-  matieres: string;
-  duree: string;
-  week?: string;
-  taux?: string;
-}
-
 /* ─── DONNÉES ─────────────────────────────── */
-const concours: Concour[] = [
-  { id:1, nom:"ENSPD", ecole:"École Nationale Supérieure Polytechnique de Douala", Icon:HiOutlineBuildingLibrary, statut:"actif", date:"15 Juillet 2026", lieu:"Douala, Campus ENSPD", montant:"15 000 FCFA", duree:"8 semaines", niveau:"Bac/Bac+1", places:"200", matieres:["Mathématiques","Physique","Chimie","Informatique","Français"] },
-  { id:2, nom:"IUT Douala", ecole:"Institut Universitaire de Technologie de Douala", Icon:HiOutlineAcademicCap, statut:"actif", date:"20 Juillet 2026", lieu:"Douala, IUT", montant:"10 000 FCFA", duree:"6 semaines", niveau:"Bac", places:"350", matieres:["Mathématiques","Physique","Français","Logique"] },
-  { id:3, nom:"Médecine Douala", ecole:"Faculté de Médecine et des Sciences Pharmaceutiques", Icon:HiOutlineBeaker, statut:"actif", date:"10 Août 2026", lieu:"Douala, Faculté de Médecine", montant:"20 000 FCFA", duree:"10 semaines", niveau:"Bac C/D", places:"100", matieres:["Biologie","Chimie","Physique","Mathématiques"] },
-  { id:4, nom:"ENSET Douala", ecole:"École Normale Supérieure de l'Enseignement Technique", Icon:MdOutlineElectricBolt, statut:"bientot", date:"05 Septembre 2026", lieu:"Douala, ENSET", montant:"12 000 FCFA", duree:"8 semaines", niveau:"Bac/Bac+1", places:"150", matieres:["Mathématiques","Physique","Sciences Industrielles","Français"] },
-  { id:5, nom:"IAI", ecole:"Institut Africain d'Informatique", Icon:HiOutlineCpuChip, statut:"bientot", date:"12 Août 2026", lieu:"Libreville (en ligne possible)", montant:"8 000 FCFA", duree:"6 semaines", niveau:"Bac", places:"80", matieres:["Mathématiques","Logique","Informatique","Anglais"] },
-  { id:6, nom:"ENSPT", ecole:"École Nationale Supérieure des Postes et Télécoms", Icon:HiOutlineSignal, statut:"actif", date:"25 Juillet 2026", lieu:"Yaoundé, ENSPT", montant:"10 000 FCFA", duree:"6 semaines", niveau:"Bac+2", places:"60", matieres:["Mathématiques","Physique","Électronique","Informatique"] },
-  { id:7, nom:"EENSTP", ecole:"École des Travaux Publics", Icon:HiOutlineWrenchScrewdriver, statut:"bientot", date:"15 Août 2026", lieu:"Yaoundé", montant:"10 000 FCFA", duree:"7 semaines", niveau:"Bac C/D", places:"120", matieres:["Mathématiques","Physique","Dessin Technique"] },
-  { id:8, nom:"ESSEC Douala", ecole:"École Supérieure des Sciences Économiques et Commerciales", Icon:HiOutlineBriefcase, statut:"passe", date:"10 Avril 2026", lieu:"Douala, ESSEC", montant:"15 000 FCFA", duree:"6 semaines", niveau:"Bac/Bac+1", places:"100", matieres:["Mathématiques","Économie","Français","Anglais","Culture Générale"] },
-  { id:9, nom:"ENS", ecole:"École Normale Supérieure", Icon:HiOutlineBookOpen, statut:"passe", date:"20 Mars 2026", lieu:"Yaoundé, ENS", montant:"8 000 FCFA", duree:"5 semaines", niveau:"Bac", places:"200", matieres:["Français","Histoire-Géo","Philosophie","Mathématiques"] },
-];
+const concours: Concours[] = [];
 
-const matieres: Matiere[] = [
-  { Icon:PiMathOperationsBold, nom:"Mathématiques", desc:"Algèbre, analyse, probabilités, géométrie. Matière fondamentale exigée par presque tous les concours.", concours:["ENSPD","IUT","Médecine","ENSET","IAI","ENSPT"], coeff:"5" },
-  { Icon:PiAtomBold, nom:"Physique", desc:"Mécanique, électricité, optique, thermodynamique. Exigée dans les filières scientifiques et techniques.", concours:["ENSPD","IUT","Médecine","ENSET","ENSPT"], coeff:"4" },
-  { Icon:PiFlaskBold, nom:"Chimie", desc:"Chimie générale, organique et minérale. Indispensable pour médecine et polytechnique.", concours:["ENSPD","Médecine","EENSTP"], coeff:"3" },
-  { Icon:PiDnaBold, nom:"Biologie", desc:"Biologie cellulaire, génétique, physiologie humaine. Spécifique au concours de médecine.", concours:["Médecine"], coeff:"5" },
-  { Icon:PiCodeBold, nom:"Informatique", desc:"Algorithmique, programmation, bases de données. Pour les concours à dominante numérique.", concours:["ENSPD","IUT","IAI","ENSPT"], coeff:"3" },
-  { Icon:PiPencilBold, nom:"Français", desc:"Expression écrite, grammaire, résumé, dissertation. Obligatoire dans tous les concours.", concours:["Tous les concours"], coeff:"2" },
-  { Icon:PiGlobeBold, nom:"Anglais", desc:"Compréhension écrite, expression. Exigé dans les concours internationaux et certaines grandes écoles.", concours:["IAI","ESSEC"], coeff:"2" },
-  { Icon:PiChartBarBold, nom:"Économie", desc:"Micro et macroéconomie, marchés, comptabilité. Spécifique aux concours de gestion et commerce.", concours:["ESSEC"], coeff:"4" },
-  { Icon:PiCircuitryBold, nom:"Électronique", desc:"Circuits, signaux, systèmes électroniques. Pour les filières télécommunications et génie électrique.", concours:["ENSPT","ENSET"], coeff:"3" },
-  { Icon:PiRulerBold, nom:"Dessin Technique", desc:"Lecture de plans, cotation, coupes. Exigé dans les concours de génie civil et travaux publics.", concours:["EENSTP"], coeff:"3" },
-  { Icon:PiBrainBold, nom:"Culture Générale", desc:"Histoire, géographie, actualité, logique. Présente dans beaucoup d'épreuves écrites.", concours:["ENS","ESSEC"], coeff:"2" },
-  { Icon:PiTreeStructureBold, nom:"Logique & Raisonnement", desc:"Tests psychotechniques, suites logiques, raisonnement abstrait. Pour les concours IUT et IAI.", concours:["IUT","IAI"], coeff:"2" },
-];
+const matieres: Matiere[] = [];
 
 /* ─── STATUS PILL ─────────────────────────── */
 const StatusPill: FC<{ statut: Statut }> = ({ statut }) => {
@@ -111,7 +54,7 @@ const StatusPill: FC<{ statut: Statut }> = ({ statut }) => {
 
 /* ─── MODAL ───────────────────────────────── */
 interface ModalProps {
-  concour: Concour | null;
+  concour: Concours | null;
   onClose: () => void;
 }
 
@@ -147,11 +90,11 @@ const Modal: FC<ModalProps> = ({ concour, onClose }) => {
             {(
               [
                 { Icon: FiCalendar, label: "Date du concours", val: concour.date, green: false },
-                { Icon: FiMapPin,   label: "Lieu",             val: concour.lieu, green: false },
+                { Icon: FiMapPin, label: "Lieu", val: concour.lieu, green: false },
                 { Icon: FiDollarSign, label: "Frais de dossier", val: concour.montant, green: true },
-                { Icon: FiClock,   label: "Durée de prépa",   val: concour.duree, green: false },
-                { Icon: FiAward,   label: "Niveau requis",    val: concour.niveau, green: false },
-                { Icon: FiUsers,   label: "Places disponibles", val: `${concour.places} places`, green: false },
+                { Icon: FiClock, label: "Durée de prépa", val: concour.duree, green: false },
+                { Icon: FiAward, label: "Niveau requis", val: concour.niveau, green: false },
+                { Icon: FiUsers, label: "Places disponibles", val: `${concour.places} places`, green: false },
               ] as { Icon: IconType; label: string; val: string; green: boolean }[]
             ).map(({ Icon, label, val, green }) => (
               <div key={label} className="bg-[#f5f7f5] rounded-xl p-4">
@@ -173,9 +116,8 @@ const Modal: FC<ModalProps> = ({ concour, onClose }) => {
           <div className="flex gap-2.5 mt-6">
             <button
               disabled={isPasse}
-              className={`flex-1 py-3.5 rounded-xl text-[14px] font-bold transition-all ${
-                isPasse ? "bg-gray-400 text-white cursor-not-allowed" : "bg-[#1a7c3e] text-white hover:bg-[#0f4f27]"
-              }`}
+              className={`flex-1 py-3.5 rounded-xl text-[14px] font-bold transition-all ${isPasse ? "bg-gray-400 text-white cursor-not-allowed" : "bg-[#1a7c3e] text-white hover:bg-[#0f4f27]"
+                }`}
             >
               {isPasse ? "Session terminée" : "S'inscrire à ce concours"}
             </button>
@@ -307,16 +249,16 @@ const Home: FC = () => {
     filtre === "tous" ? concours : concours.filter((c) => c.statut === filtre);
 
   const sessionsEncours: SessionData[] = [
-    { month:"MAI", day:"11", name:"Session Intensive — Mai 2026",       lieu:"Entrée IUT Douala", eleves:"124 élèves inscrits", matieres:"Maths · Physique · Informatique", duree:"6 semaines",  week:"2/6"  },
-    { month:"AVR", day:"28", name:"Prépa ENSPD — Spéciale Ingénierie",  lieu:"Entrée IUT Douala", eleves:"34 élèves",           matieres:"Maths · Physique · Chimie",        duree:"8 semaines",  week:"4/8"  },
-    { month:"MAI", day:"05", name:"Prépa Médecine — PCEM1",             lieu:"Entrée IUT Douala", eleves:"19 élèves",           matieres:"Biologie · Chimie · Physique",     duree:"10 semaines", week:"2/10" },
+    { month: "MAI", day: "11", name: "Session Intensive — Mai 2026", lieu: "Entrée IUT Douala", eleves: "124 élèves inscrits", matieres: "Maths · Physique · Informatique", duree: "6 semaines", week: "2/6" },
+    { month: "AVR", day: "28", name: "Prépa ENSPD — Spéciale Ingénierie", lieu: "Entrée IUT Douala", eleves: "34 élèves", matieres: "Maths · Physique · Chimie", duree: "8 semaines", week: "4/8" },
+    { month: "MAI", day: "05", name: "Prépa Médecine — PCEM1", lieu: "Entrée IUT Douala", eleves: "19 élèves", matieres: "Biologie · Chimie · Physique", duree: "10 semaines", week: "2/10" },
   ];
 
   const sessionsPassees: SessionData[] = [
-    { month:"JAN", day:"08", name:"Session Janvier 2026",       lieu:"Entrée IUT Douala", eleves:"98 élèves",  matieres:"Toutes matières",           duree:"4 semaines", taux:"72%" },
-    { month:"OCT", day:"14", name:"Session Octobre 2025",       lieu:"Entrée IUT Douala", eleves:"112 élèves", matieres:"Maths · Physique · Français",duree:"6 semaines", taux:"68%" },
-    { month:"JUL", day:"01", name:"Grande Session Été 2025",    lieu:"Entrée IUT Douala", eleves:"156 élèves", matieres:"Toutes matières",           duree:"8 semaines", taux:"81%" },
-    { month:"MAR", day:"10", name:"Session Mars 2025",          lieu:"Entrée IUT Douala", eleves:"87 élèves",  matieres:"Maths · Physique · Chimie", duree:"5 semaines", taux:"65%" },
+    { month: "JAN", day: "08", name: "Session Janvier 2026", lieu: "Entrée IUT Douala", eleves: "98 élèves", matieres: "Toutes matières", duree: "4 semaines", taux: "72%" },
+    { month: "OCT", day: "14", name: "Session Octobre 2025", lieu: "Entrée IUT Douala", eleves: "112 élèves", matieres: "Maths · Physique · Français", duree: "6 semaines", taux: "68%" },
+    { month: "JUL", day: "01", name: "Grande Session Été 2025", lieu: "Entrée IUT Douala", eleves: "156 élèves", matieres: "Toutes matières", duree: "8 semaines", taux: "81%" },
+    { month: "MAR", day: "10", name: "Session Mars 2025", lieu: "Entrée IUT Douala", eleves: "87 élèves", matieres: "Maths · Physique · Chimie", duree: "5 semaines", taux: "65%" },
   ];
 
   return (
@@ -339,20 +281,19 @@ const Home: FC = () => {
         <ul className="hidden md:flex gap-1 list-none m-0 p-0">
           {(
             [
-              { key: "accueil",   label: "Accueil"   },
-              { key: "concours",  label: "Concours"  },
-              { key: "matieres",  label: "Matières"  },
-              { key: "sessions",  label: "Sessions"  },
+              { key: "accueil", label: "Accueil" },
+              { key: "concours", label: "Concours" },
+              { key: "matieres", label: "Matières" },
+              { key: "sessions", label: "Sessions" },
             ] as { key: Page; label: string }[]
           ).map(({ key, label }) => (
             <li key={key}>
               <button
                 onClick={() => setPage(key)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer border-none bg-transparent ${
-                  page === key
-                    ? "bg-[#d4f0df] text-[#0f4f27] font-semibold"
-                    : "text-[#666] hover:bg-[#f5f7f5] hover:text-[#0a0a0a]"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer border-none bg-transparent ${page === key
+                  ? "bg-[#d4f0df] text-[#0f4f27] font-semibold"
+                  : "text-[#666] hover:bg-[#f5f7f5] hover:text-[#0a0a0a]"
+                  }`}
               >
                 {label}
               </button>
@@ -360,14 +301,18 @@ const Home: FC = () => {
           ))}
         </ul>
         <div className="flex gap-2.5">
-          <button className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#1a7c3e] text-[#1a7c3e] bg-transparent hover:bg-[#d4f0df] transition-all cursor-pointer">
-            Se connecter
-          </button>
-          <button className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#1a7c3e] text-white hover:bg-[#0f4f27] transition-all cursor-pointer border-none">
-            S'inscrire
-          </button>
+          <Link to={'/login'}>
+            <button className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#1a7c3e] text-[#1a7c3e] bg-transparent hover:bg-[#d4f0df] transition-all cursor-pointer">
+              Se connecter
+            </button>
+          </Link>
+          <Link to={'/register'}>
+            <button className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#1a7c3e] text-white hover:bg-[#0f4f27] transition-all cursor-pointer border-none">
+              S'inscrire
+            </button>
+          </Link>
         </div>
-        
+
       </nav>
 
       {/* ══ PAGE ACCUEIL ══ */}
@@ -410,8 +355,8 @@ const Home: FC = () => {
               <div className="grid grid-cols-2 gap-3.5 w-full max-w-sm">
                 {[
                   { num: "+500", lbl: "Candidats préparés cette année", full: true },
-                  { num: "13",   lbl: "Grandes écoles couvertes",       full: false },
-                  { num: "8",    lbl: "Années d'expérience",            full: false },
+                  { num: "13", lbl: "Grandes écoles couvertes", full: false },
+                  { num: "8", lbl: "Années d'expérience", full: false },
                 ].map(({ num, lbl, full }) => (
                   <div
                     key={lbl}
@@ -434,10 +379,10 @@ const Home: FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
               {(
                 [
-                  { Icon: FiTarget,   title: "Orientation académique", desc: "Analyse de votre profil et recommandation des concours les plus adaptés." },
-                  { Icon: FiBook,     title: "Préparation intensive",   desc: "Cours quotidiens avec professeurs spécialisés par concours." },
+                  { Icon: FiTarget, title: "Orientation académique", desc: "Analyse de votre profil et recommandation des concours les plus adaptés." },
+                  { Icon: FiBook, title: "Préparation intensive", desc: "Cours quotidiens avec professeurs spécialisés par concours." },
                   { Icon: FiCalendar, title: "Calendrier des concours", desc: "Dates, lieux, dossiers requis — toutes les informations centralisées." },
-                  { Icon: FiFileText, title: "Anciens sujets",         desc: "Accès aux bords et anciens sujets corrigés pour s'entraîner efficacement." },
+                  { Icon: FiFileText, title: "Anciens sujets", desc: "Accès aux bords et anciens sujets corrigés pour s'entraîner efficacement." },
                 ] as { Icon: IconType; title: string; desc: string }[]
               ).map(({ Icon, title, desc }) => (
                 <div key={title} className="bg-[#f5f7f5] rounded-2xl p-7 hover:bg-[#d4f0df] hover:-translate-y-1 transition-all group cursor-default">
@@ -477,20 +422,19 @@ const Home: FC = () => {
           <div className="px-10 md:px-20 pt-6 pb-0 flex flex-wrap gap-2.5 border-b border-[#e0e0e0]">
             {(
               [
-                { val: "tous",    label: "Tous",    Dot: null },
-                { val: "actif",   label: "Actifs",  Dot: () => <BsCircleFill className="text-[#22a052] text-[8px]" /> },
+                { val: "tous", label: "Tous", Dot: null },
+                { val: "actif", label: "Actifs", Dot: () => <BsCircleFill className="text-[#22a052] text-[8px]" /> },
                 { val: "bientot", label: "Bientôt", Dot: () => <BsCircleHalf className="text-amber-500 text-[9px]" /> },
-                { val: "passe",   label: "Passés",  Dot: () => <TbCircleOff className="text-gray-400 text-[10px]" /> },
+                { val: "passe", label: "Passés", Dot: () => <TbCircleOff className="text-gray-400 text-[10px]" /> },
               ] as { val: "tous" | Statut; label: string; Dot: FC | null }[]
             ).map(({ val, label, Dot }) => (
               <button
                 key={val}
                 onClick={() => setFiltre(val)}
-                className={`mb-3 inline-flex items-center gap-1.5 px-[18px] py-2 rounded-full text-[13px] font-semibold border transition-all cursor-pointer ${
-                  filtre === val
-                    ? "bg-[#1a7c3e] text-white border-[#1a7c3e]"
-                    : "bg-white text-[#666] border-[#e0e0e0] hover:border-[#1a7c3e] hover:text-[#1a7c3e]"
-                }`}
+                className={`mb-3 inline-flex items-center gap-1.5 px-[18px] py-2 rounded-full text-[13px] font-semibold border transition-all cursor-pointer ${filtre === val
+                  ? "bg-[#1a7c3e] text-white border-[#1a7c3e]"
+                  : "bg-white text-[#666] border-[#e0e0e0] hover:border-[#1a7c3e] hover:text-[#1a7c3e]"
+                  }`}
               >
                 {Dot && <Dot />} {label}
               </button>
@@ -517,10 +461,10 @@ const Home: FC = () => {
                   <div className="grid grid-cols-2 gap-2.5 mb-4">
                     {(
                       [
-                        { Icon: FiCalendar,   label: "Date",         val: c.date },
-                        { Icon: FiMapPin,     label: "Lieu",         val: c.lieu.split(",")[0] },
-                        { Icon: FiDollarSign, label: "Frais",        val: c.montant },
-                        { Icon: FiClock,      label: "Préparation",  val: c.duree },
+                        { Icon: FiCalendar, label: "Date", val: c.date },
+                        { Icon: FiMapPin, label: "Lieu", val: c.lieu.split(",")[0] },
+                        { Icon: FiDollarSign, label: "Frais", val: c.montant },
+                        { Icon: FiClock, label: "Préparation", val: c.duree },
                       ] as { Icon: IconType; label: string; val: string }[]
                     ).map(({ Icon, label, val }) => (
                       <div key={label} className="flex items-start gap-2">
@@ -588,17 +532,16 @@ const Home: FC = () => {
             {(
               [
                 { key: "encours", label: "En cours", Dot: () => <BsCircleFill className="text-[#22a052] text-[8px]" /> },
-                { key: "passees", label: "Passées",  Dot: () => <FiFileText size={13} /> },
+                { key: "passees", label: "Passées", Dot: () => <FiFileText size={13} /> },
               ] as { key: SessTab; label: string; Dot: FC }[]
             ).map(({ key, label, Dot }) => (
               <button
                 key={key}
                 onClick={() => setSessTab(key)}
-                className={`inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-all cursor-pointer bg-transparent border-x-0 border-t-0 ${
-                  sessTab === key
-                    ? "text-[#1a7c3e] border-[#1a7c3e]"
-                    : "text-[#666] border-transparent hover:text-[#1a7c3e]"
-                }`}
+                className={`inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-all cursor-pointer bg-transparent border-x-0 border-t-0 ${sessTab === key
+                  ? "text-[#1a7c3e] border-[#1a7c3e]"
+                  : "text-[#666] border-transparent hover:text-[#1a7c3e]"
+                  }`}
               >
                 <Dot /> {label}
               </button>
