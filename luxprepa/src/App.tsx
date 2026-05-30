@@ -5,15 +5,14 @@ import Home from "./pages/Home";
 import ConcoursPage from "./pages/Concours";
 import VerifyCode from "./pages/Code";
 import Dashboard from "./Dashboard";
+import Matieres from "./pages/Matiere";
+import Sessions from "./pages/Session";
+import Navbar from "./components/navbar";
 
 function App() {
   return (
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
+    <BrowserRouter>
+    <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -21,6 +20,8 @@ function App() {
         <Route path="/concours" element={<ConcoursPage />} />
         <Route path="/verify" element={<VerifyCode />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/matieres" element={<Matieres />} />
+         <Route path="/sessions" element={<Sessions />} />
       </Routes>
     </BrowserRouter>
   );

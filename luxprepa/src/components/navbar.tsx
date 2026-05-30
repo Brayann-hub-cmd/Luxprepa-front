@@ -1,119 +1,152 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import type { FC } from "react";
-import { FiHome, FiTarget, FiBook, FiCalendar } from "react-icons/fi";
-import { MdMenu, MdClose } from "react-icons/md";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  FaUser,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import logo from "../images/logo.jpg";
 
-type Page = "accueil" | "concours" | "matieres" | "sessions";
+export default function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [menuOpen, setMenuOpen]     = useState(false);
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-interface NavbarProps {
-  page: Page;
-  setPage: (page: Page) => void;
-}
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
 
-const Navbar: FC<NavbarProps> = ({ page, setPage }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const links: { label: string; key: Page; icon: React.ElementType; lien: string }[] = [
-    { label: "Accueil", key: "accueil", icon: FiHome, lien: "/" },
-    { label: "Concours", key: "concours", icon: FiTarget, lien: "/concours" },
-    { label: "Matières", key: "matieres", icon: FiBook, lien: "/" },
-    { label: "Sessions", key: "sessions", icon: FiCalendar, lien: "/" },
-  ];
-
-  const handleNavigation = (key: Page, lien: string) => {
-    setPage(key);
-    navigate(lien);
-    setMenuOpen(false);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    navigate("/");
   };
 
+  const navLinks = [
+    { label: "Accueil",   to: "/"         },
+    { label: "Concours",  to: "/concours" },
+    { label: "Matières",  to: "/matieres" },
+    { label: "Sessions",  to: "/sessions" },
+  ];
+
+  const isActive = (path: string) =>
+    location.pathname === path;
+
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-base-200 shadow-sm h-16 flex items-center justify-between px-4 md:px-12">
-      {/* Logo */}
-      <button
-        onClick={() => handleNavigation("accueil", "/")}
-        className="font-clash text-xl md:text-[22px] font-bold cursor-pointer"
-      >
-        <span className="text-[#1a7c3e]">Lu</span>
-        <span className="text-[#1a7c3e]">X</span>
-        <span className="text-base-content">PREPA</span>
-      </button>
+    <nav className="sticky top-0 z-40 bg-white border-b border-[#e0e0e0]">
+      <div className="flex items-center justify-between px-10 md:px-20 h-16">
 
-      {/* Navigation desktop */}
-      <ul className="hidden md:flex gap-1">
-        {links.map((link) => (
-          <li key={link.key}>
+        {/* ── LOGO ── */}
+        <Link to="/" className="flex-shrink-0">
+          <img src={logo} alt="LuxPrepa" className="h-10 w-auto" />
+        </Link>
+
+        {/* ── LIENS DESKTOP ── */}
+        <ul className="hidden md:flex gap-1 list-none m-0 p-0">
+          {navLinks.map(({ label, to }) => (
+            <li key={to}>
+              <Link
+                to={to}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isActive(to)
+                    ? "bg-[#d4f0df] text-[#0f4f27] font-semibold"
+                    : "text-[#666] hover:bg-[#f5f7f5] hover:text-[#0a0a0a]"
+                }`}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* ── BOUTONS DESKTOP ── */}
+        <div className="hidden md:flex items-center gap-2.5">
+          {isLoggedIn ? (
             <button
-              onClick={() => handleNavigation(link.key, link.lien)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer border-none ${
-                page === link.key
-                  ? "bg-[#d4f0df] text-[#0f4f27] font-semibold"
-                  : "text-base-content/70 hover:bg-base-200"
-              }`}
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#e0e0e0] text-[#666] hover:border-red-300 hover:text-red-500 transition-all cursor-pointer bg-transparent"
             >
-              {link.label}
+              <FaSignOutAlt className="text-sm" />
+              Se déconnecter
             </button>
-          </li>
-        ))}
-      </ul>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#1a7c3e] text-[#1a7c3e] bg-transparent hover:bg-[#d4f0df] transition-all"
+              >
+                Se connecter
+              </Link>
+              <Link
+                to="/register"
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#1a7c3e] text-white hover:bg-[#0f4f27] transition-all"
+              >
+                S'inscrire
+              </Link>
+            </>
+          )}
+        </div>
 
-      {/* Boutons connexion / inscription (desktop) */}
-      <div className="hidden md:flex gap-2.5">
-        <Link to="/login">
-          <button className="btn btn-sm btn-outline border-[#1a7c3e] text-[#1a7c3e] hover:bg-[#d4f0df] hover:border-[#1a7c3e]">
-            Se connecter
-          </button>
-        </Link>
-        <Link to="/register">
-          <button className="btn btn-sm bg-[#1a7c3e] text-white hover:bg-[#0f4f27] border-none">
-            S'inscrire
-          </button>
-        </Link>
+        {/* ── BURGER MOBILE ── */}
+        <button
+          className="md:hidden flex flex-col gap-1.5 cursor-pointer bg-transparent border-none p-2"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span className={`block w-6 h-0.5 bg-[#0a0a0a] transition-all ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+          <span className={`block w-6 h-0.5 bg-[#0a0a0a] transition-all ${menuOpen ? "opacity-0" : ""}`} />
+          <span className={`block w-6 h-0.5 bg-[#0a0a0a] transition-all ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+        </button>
       </div>
 
-      {/* Hamburger mobile */}
-      <button
-        className="md:hidden btn btn-ghost btn-circle"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        {menuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
-      </button>
-
-      {/* Menu mobile */}
+      {/* ── MENU MOBILE ── */}
       {menuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white border-b border-base-200 shadow-lg md:hidden z-50">
-          <ul className="flex flex-col p-4 gap-2">
-            {links.map((link) => (
-              <li key={link.key}>
-                <button
-                  onClick={() => handleNavigation(link.key, link.lien)}
-                  className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    page === link.key
-                      ? "bg-[#d4f0df] text-[#0f4f27] font-semibold"
-                      : "text-base-content/70 hover:bg-base-200"
-                  }`}
+        <div className="md:hidden bg-white border-t border-[#e0e0e0] px-6 py-4 flex flex-col gap-2">
+          {navLinks.map(({ label, to }) => (
+            <Link
+              key={to}
+              to={to}
+              onClick={() => setMenuOpen(false)}
+              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isActive(to)
+                  ? "bg-[#d4f0df] text-[#0f4f27] font-semibold"
+                  : "text-[#666] hover:bg-[#f5f7f5]"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+
+          <div className="border-t border-[#e0e0e0] mt-2 pt-3 flex flex-col gap-2">
+            {isLoggedIn ? (
+              <button
+                onClick={() => { handleLogout(); setMenuOpen(false); }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border-none"
+              >
+                <FaSignOutAlt /> Se déconnecter
+              </button>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="px-4 py-2.5 rounded-lg text-sm font-semibold border border-[#1a7c3e] text-[#1a7c3e] text-center hover:bg-[#d4f0df] transition-all"
                 >
-                  {link.label}
-                </button>
-              </li>
-            ))}
-            <hr className="my-2" />
-            <Link to="/login" onClick={() => setMenuOpen(false)}>
-              <button className="w-full btn btn-sm btn-outline border-[#1a7c3e] text-[#1a7c3e]">
-                Se connecter
-              </button>
-            </Link>
-            <Link to="/register" onClick={() => setMenuOpen(false)}>
-              <button className="w-full btn btn-sm bg-[#1a7c3e] text-white">
-                S'inscrire
-              </button>
-            </Link>
-          </ul>
+                  <FaUser className="inline mr-2" />
+                  Connexion
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="px-4 py-2.5 rounded-lg text-sm font-semibold bg-[#1a7c3e] text-white text-center hover:bg-[#0f4f27] transition-all"
+                >
+                  S'inscrire
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>
   );
 };
-
-export default Navbar;

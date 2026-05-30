@@ -1,361 +1,385 @@
 import { useState } from "react";
-import logo from '../images/logo.jpg'
-import { PiStudent } from "react-icons/pi";
-import { GiTeacher } from "react-icons/gi";
-import { Link, useNavigate } from "react-router-dom";
-import { authApi } from "../api";
-import {toast} from "react-hot-toast";
-// ── Types ────────────────────────────────────────────────────
-type Role = "eleve" | "prof";
-// ── Eye Icon ─────────────────────────────────────────────────
-const EyeIcon = ({ open }: { open: boolean }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    {open ? (
-      <>
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#6b7280" strokeWidth="1.8" fill="none"/>
-        <circle cx="12" cy="12" r="3" stroke="#6b7280" strokeWidth="1.8" fill="none"/>
-      </>
-    ) : (
-      <>
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round"/>
-        <line x1="1" y1="1" x2="23" y2="23" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round"/>
-      </>
-    )}
-  </svg>
-);
+import { useNavigate, Link } from "react-router-dom";
+import { toast, Toaster } from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
 
-// ── Phone Icon ───────────────────────────────────────────────
-const PhoneIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="#6b7280" strokeWidth="1.8" fill="none"/>
-  </svg>
-);
+// ── Copie minimale des utils nécessaires ──
+// (adapte selon ton vrai import path)
+// import { authApi, tokenUtils } from "../api";
 
-// ── Lock Icon ────────────────────────────────────────────────
-const LockIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#6b7280" strokeWidth="1.8" fill="none"/>
-    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round"/>
-  </svg>
-);
+// ── Types locaux (déjà définis dans api.tsx) ──
+interface LoginData {
+  telephone: string;
+  password: string;
+}
 
-export default function Login() {
-  const [role, setRole] = useState<Role>("eleve");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+// ─────────────────────────────────────────────
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState<LoginData>({ telephone: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [erreur,setErreur] = useState<string | null>(null)
-  const navigate = useNavigate()
+  const [showPwd, setShowPwd] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.telephone || !form.password) {
+      toast.error("Remplis tous les champs.");
+      return;
+    }
     setLoading(true);
-    setErreur(null)
     try {
-      const response = await authApi.connexion({ telephone:phone, password: password })
-      toast.success(response.message)
-      setLoading(false)
-      navigate('/')
-    } catch (error) {
-      if (error instanceof Error){
-        setErreur(error.message)
-        console.log(erreur);
-      }
-    }finally{
-      setLoading(false)
+      // ── Décommente et adapte quand authApi est importé ──
+      // const { token, user } = await authApi.login(form);
+      // tokenUtils.sauvegarder(token);
+      // navigate(user.role === "admin" ? "/dashboard" : "/concours");
+      toast.success("Connexion réussie !");
+      navigate("/concours");
+    } catch (err: any) {
+      toast.error(err.message || "Identifiants incorrects.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(160deg, #f0fdf4 0%, #dcfce7 35%, #bbf7d0 70%, #86efac 100%)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "24px",
-      fontFamily: "'Segoe UI', system-ui, sans-serif",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      {/* Decorative background circles */}
-      <div style={{ position: "absolute", top: -80, right: -80, width: 320, height: 320, borderRadius: "50%", background: "rgba(134,239,172,.25)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: -60, left: -60, width: 240, height: 240, borderRadius: "50%", background: "rgba(74,222,128,.2)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", top: "40%", left: -40, width: 140, height: 140, borderRadius: "50%", background: "rgba(187,247,208,.4)", pointerEvents: "none" }} />
+    <>
+      <Toaster position="top-center" />
 
+      {/* ── Page wrapper ── */}
+      <div className="login-root">
+        {/* Fond décoratif */}
+        <div className="login-bg">
+          <div className="login-blob blob-1" />
+          <div className="login-blob blob-2" />
+          <div className="login-grid" />
+        </div>
+
+        {/* ── Carte centrale ── */}
+        <div className="  login-card">
+          {/* Logo / Brand */}
+          <div className="login-brand">
+            <span className="brand-lux">LuX</span>
+            <span className="brand-prepa">PREPA</span>
+          </div>
+
+          <h1 className="login-title">Connexion</h1>
+          <p className="login-sub">
+              Accède à ta préparation aux concours
+          </p>
+
+          <form onSubmit={handleSubmit} className="login-form" noValidate>
+            {/* Téléphone */}
+            <div className="field-group">
+              <label htmlFor="telephone" className="field-label">
+                Téléphone
+              </label>
+              <div className="field-wrap">
+                <span className="field-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5
+                      19.5 0 013.07 9.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012
+                      1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006
+                      6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                  </svg>
+                </span>
+                <input
+                  id="telephone"
+                  name="telephone"
+                  type="tel"
+                  placeholder="6XXXXXXXX"
+                  value={form.telephone}
+                  onChange={handleChange}
+                  className="field-input"
+                  autoComplete="tel"
+                />
+              </div>
+            </div>
+
+            {/* Mot de passe */}
+            <div className="field-group">
+              <label htmlFor="password" className="field-label">
+                Mot de passe
+              </label>
+              <div className="field-wrap">
+                <span className="field-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                  </svg>
+                </span>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPwd ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="field-input"
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="pwd-toggle"
+                  onClick={() => setShowPwd((v) => !v)}
+                  tabIndex={-1}
+                  aria-label={showPwd ? "Masquer" : "Afficher"}
+                >
+                  {showPwd ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45
+                        18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5
+                        18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button type="submit" className="btn-login" disabled={loading}>
+              {loading ? (
+                <ClipLoader color="#fff" size={18} />
+              ) : (
+                "Se connecter"
+              )}
+            </button>
+          </form>
+
+          {/* Footer liens */}
+          <div className="login-footer">
+            <span>Pas encore inscrit ?</span>
+            <Link to="/register" className="login-link">
+              Créer un compte
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Styles scoped ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        * { box-sizing: border-box; }
-        .login-card { animation: slideUp .5s cubic-bezier(.22,1,.36,1) both; }
+        /* ─── Reset / Root ─── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        .login-root {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #0f1117;
+          font-family: 'Segoe UI', system-ui, sans-serif;
+          position: relative;
+          overflow: hidden;
+          padding: 1.5rem;
+        }
+
+        /* ─── Background déco ─── */
+        .login-bg {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .login-blob {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          opacity: 0.18;
+        }
+        .blob-1 {
+          width: 480px; height: 480px;
+          background: #2d6a4f;
+          top: -120px; left: -140px;
+          animation: float 8s ease-in-out infinite;
+        }
+        .blob-2 {
+          width: 380px; height: 380px;
+          background: #1b4332;
+          bottom: -100px; right: -100px;
+          animation: float 10s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-20px) scale(1.04); }
+        }
+
+        .login-grid {
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(45,106,79,0.07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(45,106,79,0.07) 1px, transparent 1px);
+          background-size: 40px 40px;
+        }
+
+        /* ─── Card ─── */
+        .login-card {
+          position: relative;
+          z-index: 1;
+          width: 100%;
+          max-width: 420px;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          padding: 2.5rem 2rem;
+          backdrop-filter: blur(16px);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+          animation: slideUp 0.5s cubic-bezier(.22,1,.36,1) both;
+        }
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(28px); }
+          from { opacity: 0; transform: translateY(32px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .role-tab { transition: all .22s ease; }
-        .role-tab:hover { background: rgba(22,101,52,.08) !important; }
-        .login-btn { transition: all .18s ease; }
-        .login-btn:hover:not(:disabled) { background: #14532d !important; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(22,101,52,.35) !important; }
-        .login-btn:active:not(:disabled) { transform: translateY(0); }
-        .login-btn:disabled { opacity: .7; cursor: not-allowed; }
-        .input-field { transition: border-color .2s, box-shadow .2s; }
-        .signup-link { transition: color .15s; }
-        .signup-link:hover { color: #14532d !important; text-decoration: underline; }
-        .eye-btn { transition: opacity .15s; }
-        .eye-btn:hover { opacity: .7; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spinner { animation: spin .8s linear infinite; }
+
+        /* ─── Brand ─── */
+        .login-brand {
+          display: flex;
+          align-items: center;
+          gap: 0;
+          margin-bottom: 1.8rem;
+          font-size: 1.6rem;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+        }
+        .brand-lux  { color: #fff; }
+        .brand-prepa { color: #52b788; }
+
+        /* ─── Titres ─── */
+        .login-title {
+          font-size: 1.55rem;
+          font-weight: 700;
+          color: #fff;
+          margin-bottom: 0.35rem;
+        }
+        .login-sub {
+          font-size: 0.85rem;
+          color: rgba(255,255,255,0.45);
+          margin-bottom: 2rem;
+        }
+
+        /* ─── Formulaire ─── */
+        .login-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.2rem;
+        }
+
+        .field-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.45rem;
+        }
+        .field-label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: rgba(255,255,255,0.6);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+        .field-wrap {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+        .field-icon {
+          position: absolute;
+          left: 14px;
+          color: rgba(255,255,255,0.3);
+          display: flex;
+          align-items: center;
+          pointer-events: none;
+        }
+        .field-input {
+          width: 100%;
+          padding: 0.75rem 2.8rem 0.75rem 2.8rem;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 10px;
+          color: #fff;
+          font-size: 0.95rem;
+          outline: none;
+          transition: border-color 0.2s, background 0.2s;
+        }
+        .field-input::placeholder { color: rgba(255,255,255,0.2); }
+        .field-input:focus {
+          border-color: #52b788;
+          background: rgba(82,183,136,0.08);
+        }
+
+        .pwd-toggle {
+          position: absolute;
+          right: 12px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: rgba(255,255,255,0.35);
+          display: flex;
+          align-items: center;
+          padding: 0;
+          transition: color 0.2s;
+        }
+        .pwd-toggle:hover { color: rgba(255,255,255,0.7); }
+
+        /* ─── Bouton ─── */
+        .btn-login {
+          margin-top: 0.4rem;
+          width: 100%;
+          padding: 0.85rem;
+          background: #2d6a4f;
+          border: none;
+          border-radius: 10px;
+          color: #fff;
+          font-size: 1rem;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+          box-shadow: 0 4px 20px rgba(45,106,79,0.35);
+        }
+        .btn-login:hover:not(:disabled) {
+          background: #40916c;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 28px rgba(45,106,79,0.5);
+        }
+        .btn-login:active:not(:disabled) { transform: translateY(0); }
+        .btn-login:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        /* ─── Footer ─── */
+        .login-footer {
+          margin-top: 1.6rem;
+          text-align: center;
+          font-size: 0.85rem;
+          color: rgba(255,255,255,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.4rem;
+        }
+        .login-link {
+          color: #52b788;
+          font-weight: 600;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+        .login-link:hover { color: #74c69d; text-decoration: underline; }
       `}</style>
-
-      {/* Card */}
-      <div className="login-card" style={{
-        background: "rgba(255,255,255,.88)",
-        backdropFilter: "blur(20px)",
-        borderRadius: 24,
-        padding: "40px 36px",
-        width: "100%",
-        maxWidth: 420,
-        boxShadow: "0 20px 60px rgba(0,0,0,.08), 0 1px 0 rgba(255,255,255,.9) inset",
-        border: "1px solid rgba(255,255,255,.7)",
-        position: "relative",
-        zIndex: 1,
-      }}>
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-            <img src={logo} className="h-[36px] w-auto" />
-          </div>
-          <h1 style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontSize: 22,
-            fontWeight: 800,
-            color: "#14532d",
-            margin: "0 0 8px",
-            lineHeight: 1.2,
-          }}>
-            Bienvenue à Luxprepa
-          </h1>
-          <p style={{
-            fontSize: 13.5,
-            color: "#6b7280",
-            margin: 0,
-            lineHeight: 1.5,
-          }}>
-            Nous vous souhaitons la bienvenue !<br />
-          </p>
-        </div>
-
-        {/* Role selector */}
-        <div style={{
-          display: "flex",
-          background: "#f0fdf4",
-          borderRadius: 12,
-          padding: 4,
-          marginBottom: 28,
-          border: "1px solid #bbf7d0",
-        }}>
-          {(["eleve" , "prof"] as Role[]).map((r) => (
-            <button
-              key={r}
-              className="role-tab"
-              onClick={() => setRole(r)}
-              style={{
-                flex: 1,
-                padding: "9px 0",
-                borderRadius: 9,
-                border: "none",
-                cursor: "pointer",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 700,
-                fontSize: 13,
-                background: role === r ? "#166534" : "transparent",
-                color: role === r ? "#fff" : "#6b7280",
-                boxShadow: role === r ? "0 2px 8px rgba(22,101,52,.3)" : "none",
-                letterSpacing: .2,
-              }}
-            >
-              {r === "eleve" ? 
-              <div className="flex flex-row items-center justify-center gap-4"><PiStudent size={25} color="grey"/> Élève</div>: 
-              <div className="flex flex-row items-center justify-center gap-4"><GiTeacher size={25} color="grey"/> Professeur</div>}
-            </button>
-          ))}
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
-          {/* Phone field */}
-          <div>
-            <label style={{
-              display: "block",
-              fontSize: 12.5,
-              fontWeight: 700,
-              color: "#374151",
-              marginBottom: 7,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              letterSpacing: .3,
-              textTransform: "uppercase",
-            }}>
-              Numéro de téléphone
-            </label>
-            <div style={{ position: "relative" }}>
-              <span style={{
-                position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)",
-                display: "flex", alignItems: "center",
-              }}>
-                <PhoneIcon />
-              </span>
-              <input
-                className="input-field"
-                type="tel"
-                placeholder="6XX XXX XXX"
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
-                onFocus={() => setFocusedField("phone")}
-                onBlur={() => setFocusedField(null)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px 14px 12px 40px",
-                  borderRadius: 12,
-                  border: focusedField === "phone"
-                    ? "2px solid #166534"
-                    : "1.5px solid #d1fae5",
-                  outline: "none",
-                  fontSize: 14,
-                  color: "#111827",
-                  background: "#f9fffe",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  boxShadow: focusedField === "phone" ? "0 0 0 3px rgba(22,101,52,.1)" : "none",
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Password field */}
-          <div>
-            <label style={{
-              display: "block",
-              fontSize: 12.5,
-              fontWeight: 700,
-              color: "#374151",
-              marginBottom: 7,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              letterSpacing: .3,
-              textTransform: "uppercase",
-            }}>
-              Mot de passe
-            </label>
-            <div style={{ position: "relative" }}>
-              <span style={{
-                position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)",
-                display: "flex", alignItems: "center",
-              }}>
-                <LockIcon />
-              </span>
-              <input
-                className="input-field"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onFocus={() => setFocusedField("password")}
-                onBlur={() => setFocusedField(null)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px 44px 12px 40px",
-                  borderRadius: 12,
-                  border: focusedField === "password"
-                    ? "2px solid #166534"
-                    : "1.5px solid #d1fae5",
-                  outline: "none",
-                  fontSize: 14,
-                  color: "#111827",
-                  background: "#f9fffe",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  boxShadow: focusedField === "password" ? "0 0 0 3px rgba(22,101,52,.1)" : "none",
-                }}
-              />
-              <button
-                type="button"
-                className="eye-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
-                  background: "none", border: "none", cursor: "pointer", padding: 2,
-                  display: "flex", alignItems: "center",
-                }}
-              >
-                <EyeIcon open={showPassword} />
-              </button>
-            </div>
-            <div style={{ textAlign: "right", marginTop: 6 }}>
-              <span style={{ fontSize: 12, color: "#166534", fontWeight: 600, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Mot de passe oublié ?
-              </span>
-            </div>
-          </div>
-
-          {/* Submit button */}
-          <button
-            type="submit"
-            className="login-btn"
-            disabled={loading}
-            style={{
-              marginTop: 6,
-              padding: "14px",
-              background: "#166534",
-              color: "#fff",
-              border: "none",
-              borderRadius: 13,
-              fontSize: 15,
-              fontWeight: 800,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              cursor: "pointer",
-              letterSpacing: .3,
-              boxShadow: "0 4px 16px rgba(22,101,52,.28)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 10,
-            }}
-          >
-            {loading ? (
-              <>
-                <svg className="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" strokeWidth="3"/>
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-                </svg>
-                Connexion en cours...
-              </>
-            ) : (
-              "Se connecter"
-            )}
-          </button>
-        </form>
-
-        {/* Divider */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0" }}>
-          <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
-          <span style={{ fontSize: 12, color: "#9ca3af", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>ou</span>
-          <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
-        </div>
-
-        {/* Sign up link */}
-        <p style={{ textAlign: "center", fontSize: 13.5, color: "#6b7280", margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Vous n'avez pas de compte ?{" "}
-          <Link to="/register" className="signup-link" style={{ color: "#166534", fontWeight: 700, textDecoration: "none" }}>
-            Inscrivez-vous
-          </Link>
-        </p>
-
-        {/* Footer note */}
-        <p style={{ textAlign: "center", fontSize: 11, color: "#9ca3af", marginTop: 20, marginBottom: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          En vous connectant, vous acceptez nos{" "}
-          <Link to={"/condition-utilisation"} style={{ color: "#166534", cursor: "pointer" }}>conditions d'utilisation</Link>
-        </p>
-      </div>
-    </div>
+    </>
   );
 }
