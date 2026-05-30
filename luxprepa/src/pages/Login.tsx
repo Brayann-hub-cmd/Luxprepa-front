@@ -59,7 +59,7 @@ export default function LoginPage() {
         </div>
 
         {/* ── Carte centrale ── */}
-        <div className="login-card">
+        <div className="  login-card">
           {/* Logo / Brand */}
           <div className="login-brand">
             <span className="brand-lux">LuX</span>
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
           <h1 className="login-title">Connexion</h1>
           <p className="login-sub">
-            Accède à ta préparation aux concours
+              Accède à ta préparation aux concours
           </p>
 
           <form onSubmit={handleSubmit} className="login-form" noValidate>
