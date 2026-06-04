@@ -2,18 +2,13 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
+import { authApi, tokenUtils } from "../api";
 
-// ── Copie minimale des utils nécessaires ──
-// (adapte selon ton vrai import path)
-// import { authApi, tokenUtils } from "../api";
-
-// ── Types locaux (déjà définis dans api.tsx) ──
 interface LoginData {
   telephone: string;
   password: string;
 }
 
-// ─────────────────────────────────────────────
 export default function LoginPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<LoginData>({ telephone: "", password: "" });
@@ -33,13 +28,13 @@ export default function LoginPage() {
     setLoading(true);
     try {
       // ── Décommente et adapte quand authApi est importé ──
-      // const { token, user } = await authApi.login(form);
-      // tokenUtils.sauvegarder(token);
-      // navigate(user.role === "admin" ? "/dashboard" : "/concours");
+      const { token, user } = await authApi.connexion(form);
+      tokenUtils.sauvegarder(token);
+      tokenUtils.sauvegarderUser(user)
       toast.success("Connexion réussie !");
       navigate("/concours");
-    } catch (err: any) {
-      toast.error(err.message || "Identifiants incorrects.");
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message)
     } finally {
       setLoading(false);
     }
@@ -59,15 +54,15 @@ export default function LoginPage() {
         </div>
 
         {/* ── Carte centrale ── */}
-        <div className="  login-card">
+        <div className=" login-card">
           {/* Logo / Brand */}
-          <div className="login-brand">
+          <div className="login-brand flex items-center justify-center">
             <span className="brand-lux">LuX</span>
             <span className="brand-prepa">PREPA</span>
           </div>
 
-          <h1 className="login-title">Connexion</h1>
-          <p className="login-sub">
+          <h1 className="login-title flex items-center justify-center">Connexion</h1>
+          <p className="login-sub flex items-center justify-center">
               Accède à ta préparation aux concours
           </p>
 

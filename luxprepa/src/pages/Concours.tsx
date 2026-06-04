@@ -113,7 +113,7 @@ const ConcoursPage = () => {
               </div>
               <div>
                 <span className="text-base-content/40">Frais :</span>{' '}
-                {selected.montant_prepa?.toLocaleString()} FCFA
+                {(selected.montant_prepa + selected.inscription_prepa)?.toLocaleString()} FCFA
               </div>
             </div>
 
@@ -185,7 +185,7 @@ const ConcoursPage = () => {
                 </p>
                 <div className="flex justify-between items-center mt-4">
                   <span className="text-sm font-semibold">
-                    {c.montant_prepa?.toLocaleString()} FCFA
+                    {(c.montant_prepa+c.inscription_prepa)?.toLocaleString()} FCFA
                   </span>
                   {dejaInscrit && (
                     <span className="text-success flex items-center gap-1 text-xs">

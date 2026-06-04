@@ -101,12 +101,12 @@ const Modal = ({
           {/* Infos grille */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             {[
-              { Icon: FiCalendar,   label: "Date début",        val: new Date(concour.date_debut).toLocaleDateString("fr-FR"), green: false },
-              { Icon: FiCalendar,   label: "Date fin",          val: new Date(concour.date_fin).toLocaleDateString("fr-FR"),   green: false },
-              { Icon: FiDollarSign, label: "Frais inscription", val: `${concour.inscription_prepa} €`,                        green: true  },
-              { Icon: FiDollarSign, label: "Frais formation",   val: `${concour.montant_prepa} €`,                            green: false },
-              { Icon: FiUsers,      label: "Inscrits",          val: concour.nombre_inscrits !== undefined ? String(concour.nombre_inscrits) : "—", green: false },
-              { Icon: FiAward,      label: "Matières",          val: concour.nombre_matieres !== undefined ? String(concour.nombre_matieres) : "—", green: false },
+              { Icon: FiCalendar, label: "Date début", val: new Date(concour.date_debut).toLocaleDateString("fr-FR"), green: false },
+              { Icon: FiCalendar, label: "Date fin", val: new Date(concour.date_fin).toLocaleDateString("fr-FR"), green: false },
+              { Icon: FiDollarSign, label: "Frais inscription", val: `${concour.inscription_prepa} Fcfa`, green: true },
+              { Icon: FiDollarSign, label: "Frais formation", val: `${concour.montant_prepa} Fcfa`, green: false },
+              { Icon: FiUsers, label: "Inscrits", val: concour.nombre_inscrits !== undefined ? String(concour.nombre_inscrits) : "—", green: false },
+              { Icon: FiAward, label: "Matières", val: concour.nombre_matieres !== undefined ? String(concour.nombre_matieres) : "—", green: false },
             ].map(({ Icon, label, val, green }) => (
               <div key={label} className="bg-[#f5f7f5] rounded-xl p-4">
                 <div className="flex items-center gap-1.5 text-[11px] text-[#aaa] font-semibold uppercase tracking-[0.4px] mb-1">
@@ -133,7 +133,7 @@ const Modal = ({
 
           {/* Boutons */}
           <div className="flex gap-2.5 mt-6">
-            {dejaInscrit ? (
+            {/* {dejaInscrit ? (
               <div className="flex-1 py-3.5 rounded-xl text-[14px] font-bold bg-[#d4f0df] text-[#0f4f27] text-center">
                 ✅ Vous êtes inscrit !
               </div>
@@ -155,7 +155,7 @@ const Modal = ({
                   "S'inscrire à ce concours"
                 )}
               </button>
-            )}
+            )} */}
             <button
               onClick={onClose}
               className="px-5 py-3.5 bg-transparent border border-[#e0e0e0] rounded-xl text-[14px] font-semibold text-[#666] hover:border-[#999] transition-all cursor-pointer"
@@ -206,12 +206,12 @@ const Footer = ({ compact = false }: { compact?: boolean }) => (
 export default function Home() {
   const navigate = useNavigate();
 
-  const [concours, setConcours]                 = useState<Concours[]>([]);
-  const [matieres, setMatieres]                 = useState<Matiere[]>([]);
-  const [loading, setLoading]                   = useState(true);
-  const [modalConcour, setModalConcour]         = useState<Concours | null>(null);
+  const [concours, setConcours] = useState<Concours[]>([]);
+  const [matieres, setMatieres] = useState<Matiere[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modalConcour, setModalConcour] = useState<Concours | null>(null);
   const [inscriptionLoading, setInscriptionLoading] = useState<string | null>(null);
-  const [inscritIds, setInscritIds]             = useState<string[]>([]);
+  const [inscritIds, setInscritIds] = useState<string[]>([]);
 
   // Charger concours + matières au montage
   useEffect(() => {
@@ -223,8 +223,8 @@ export default function Home() {
         ]);
         setConcours(listeConcours);
         setMatieres(listeMatieres);
-      } catch {
-        toast.error("Impossible de charger les données.");
+      } catch (error) {
+        if (error instanceof Error) toast.error(error.message)
       } finally {
         setLoading(false);
       }
@@ -240,8 +240,8 @@ export default function Home() {
       setInscritIds((prev) => [...prev, concoursId]);
       toast.success("Inscription confirmée !");
       setModalConcour(null);
-    } catch {
-      toast.error("Erreur lors de l'inscription.");
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message)
     } finally {
       setInscriptionLoading(null);
     }
@@ -297,10 +297,10 @@ export default function Home() {
               Voir les concours <FiChevronRight />
             </button>
             <button
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/dashboard")}
               className="px-7 py-3.5 rounded-xl text-[15px] font-bold bg-transparent border border-[#444] text-[#ccc] hover:border-[#888] hover:text-white transition-all cursor-pointer"
             >
-              S'inscrire
+              Mon profil
             </button>
           </div>
         </div>
@@ -311,7 +311,7 @@ export default function Home() {
             {[
               { num: `+${concours.length > 0 ? concours.reduce((a, c) => a + (c.nombre_inscrits ?? 0), 0) : 500}`, lbl: "Candidats inscrits cette année", full: true },
               { num: String(concours.length > 0 ? concours.length : 13), lbl: "Concours disponibles", full: false },
-              { num: String(matieres.length > 0 ? matieres.length : 12), lbl: "Matières couvertes",   full: false },
+              { num: String(matieres.length > 0 ? matieres.length : 12), lbl: "Matières couvertes", full: false },
             ].map(({ num, lbl, full }) => (
               <div
                 key={lbl}
@@ -333,10 +333,10 @@ export default function Home() {
         <p className="text-[#666] text-sm mb-9">Un accompagnement complet de A à Z pour réussir vos concours</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
           {[
-            { Icon: FiTarget,   title: "Orientation académique", desc: "Analyse de votre profil et recommandation des concours les plus adaptés." },
-            { Icon: FiBook,     title: "Préparation intensive",   desc: "Cours quotidiens avec professeurs spécialisés par concours." },
+            { Icon: FiTarget, title: "Orientation académique", desc: "Analyse de votre profil et recommandation des concours les plus adaptés." },
+            { Icon: FiBook, title: "Préparation intensive", desc: "Cours quotidiens avec professeurs spécialisés par concours." },
             { Icon: FiCalendar, title: "Calendrier des concours", desc: "Dates, lieux, dossiers requis — toutes les informations centralisées." },
-            { Icon: FiFileText, title: "Anciens sujets",          desc: "Accès aux anciens sujets corrigés pour s'entraîner efficacement." },
+            { Icon: FiFileText, title: "Anciens sujets", desc: "Accès aux anciens sujets corrigés pour s'entraîner efficacement." },
           ].map(({ Icon, title, desc }) => (
             <div key={title} className="bg-[#f5f7f5] rounded-2xl p-7 hover:bg-[#d4f0df] hover:-translate-y-1 transition-all group cursor-default">
               <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm group-hover:bg-[#1a7c3e] transition-all">
@@ -397,10 +397,10 @@ export default function Home() {
                   <div className="px-5 py-4">
                     <div className="grid grid-cols-2 gap-2.5 mb-4">
                       {[
-                        { Icon: FiCalendar,   label: "Début",       val: new Date(c.date_debut).toLocaleDateString("fr-FR") },
-                        { Icon: FiCalendar,   label: "Fin",         val: new Date(c.date_fin).toLocaleDateString("fr-FR")   },
-                        { Icon: FiDollarSign, label: "Inscription", val: `${c.inscription_prepa} €`                        },
-                        { Icon: FiClock,      label: "Formation",   val: `${c.montant_prepa} €`                            },
+                        { Icon: FiCalendar, label: "Début", val: new Date(c.date_debut).toLocaleDateString("fr-FR") },
+                        { Icon: FiCalendar, label: "Fin", val: new Date(c.date_fin).toLocaleDateString("fr-FR") },
+                        { Icon: FiDollarSign, label: "Inscription", val: `${c.inscription_prepa} Fcfa` },
+                        { Icon: FiClock, label: "Formation", val: `${c.montant_prepa} Fcfa` },
                       ].map(({ Icon, label, val }) => (
                         <div key={label} className="flex items-start gap-2">
                           <Icon size={13} className="text-[#1a7c3e] mt-0.5 flex-shrink-0" />
@@ -415,7 +415,7 @@ export default function Home() {
                       onClick={() => setModalConcour(c)}
                       className="w-full py-2.5 rounded-lg text-[13px] font-bold border border-[#1a7c3e] text-[#1a7c3e] bg-transparent hover:bg-[#1a7c3e] hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5"
                     >
-                      {dejaInscrit ? "✅ Inscrit — Voir détails" : "Détails & s'inscrire"}
+                      {dejaInscrit ? "✅ Inscrit — Voir détails" : "Détails"}
                       <FiChevronRight size={14} />
                     </button>
                   </div>
